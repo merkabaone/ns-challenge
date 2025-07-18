@@ -48,6 +48,12 @@ export default function Home() {
                   Test System
                 </Button>
               </Link>
+              <Link href="/auth-test">
+                <Button variant="outline" className="w-full">
+                  <User className="h-4 w-4 mr-2" />
+                  Test Authentication
+                </Button>
+              </Link>
             </CardContent>
           </Card>
 
