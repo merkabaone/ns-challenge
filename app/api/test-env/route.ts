@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
     const missingVars = envStatus.filter(env => !env.present).map(env => env.name)
     
     // Debug: Log environment check
+    // eslint-disable-next-line no-console
     console.log('Environment check:', {
       allPresent,
       missingVars,
@@ -44,6 +45,7 @@ export async function GET(request: NextRequest) {
     })
     
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Error checking environment variables:', error)
     return NextResponse.json({
       success: false,

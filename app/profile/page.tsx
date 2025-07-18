@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { Camera } from 'lucide-react'
 import '../globals.css'
 
 const INTERESTS = [
@@ -12,13 +11,17 @@ const INTERESTS = [
   '🧠 Philosophy', '🍜 Foodie', '🃏 Game Nights'
 ]
 
+const WAYS_TO_CONNECT = [
+  '☕ Coffee Chat', '💻 Co-working', '🍽️ Grab a Meal', 
+  '🏃 Activities', '💡 Brainstorm', '🗣️ Deep Talks'
+]
+
 export default function ProfileSetup() {
   const router = useRouter()
-  const fileInputRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
-  const [displayName, setDisplayName] = useState('')
-  const [selectedInterest, setSelectedInterest] = useState('')
-  const [profileImage, setProfileImage] = useState<string | null>(null)
+  const [displayName, setDisplayName] = useState('Demo User')
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([])
+  const [connectionStyle, setConnectionStyle] = useState('')
 
   const toggleInterest = (interest: string) => {
     if (selectedInterests.includes(interest)) {
@@ -29,7 +32,7 @@ export default function ProfileSetup() {
   }
 
   const handleFinish = async () => {
-    if (!displayName || selectedInterests.length === 0 || !connectionStyle) {
+    if (selectedInterests.length === 0 || !connectionStyle) {
       return
     }
 
@@ -102,7 +105,7 @@ export default function ProfileSetup() {
       <div className="max-w-2xl mx-auto px-6 py-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-light mb-4">
-            Hi {displayName}! 👋
+            Hi there! 👋
           </h1>
           <p className="text-xl opacity-80">
             Let&apos;s get you connected quickly
