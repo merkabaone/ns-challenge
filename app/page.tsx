@@ -48,7 +48,11 @@ export default function Home() {
             fontWeight: '700',
             letterSpacing: '0.05em',
             boxShadow: '0 12px 48px rgba(255, 255, 255, 0.3)',
-            minWidth: '320px'
+            minWidth: '320px',
+            backgroundColor: 'white',
+            color: 'black',
+            border: 'none',
+            outline: 'none'
           }}
         >
           Begin
