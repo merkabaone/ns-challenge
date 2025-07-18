@@ -17,6 +17,10 @@ export default function Home() {
   }, [router])
 
   const handleBegin = () => {
+    // Clear any existing demo profile to start fresh
+    localStorage.removeItem('demo_profile')
+    localStorage.removeItem('demo_user_id')
+    localStorage.removeItem('temp_profile')
     router.push('/profile')
   }
 

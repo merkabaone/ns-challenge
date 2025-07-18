@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { Camera } from 'lucide-react'
 import '../globals.css'
 
 const INTERESTS = [
@@ -11,94 +11,59 @@ const INTERESTS = [
   '🧠 Philosophy', '🍜 Foodie', '🃏 Game Nights'
 ]
 
-const WAYS_TO_CONNECT = [
-  '☕ Coffee Chat', '💻 Co-working', '🍽️ Grab a Meal', 
-  '🏃 Activities', '💡 Brainstorm', '🗣️ Deep Talks'
-]
-
 export default function ProfileSetup() {
   const router = useRouter()
-  const [loading, setLoading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [displayName, setDisplayName] = useState('')
-  const [discordHandle, setDiscordHandle] = useState('')
-  const [selectedInterests, setSelectedInterests] = useState<string[]>([])
-  const [connectionStyle, setConnectionStyle] = useState('')
+  const [selectedInterest, setSelectedInterest] = useState('')
+  const [profileImage, setProfileImage] = useState<string | null>(null)
 
-  const toggleInterest = (interest: string) => {
-    if (selectedInterests.includes(interest)) {
-      setSelectedInterests(selectedInterests.filter(i => i !== interest))
-    } else if (selectedInterests.length < 3) {
-      setSelectedInterests([...selectedInterests, interest])
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setProfileImage(reader.result as string)
+      }
+      reader.readAsDataURL(file)
     }
   }
 
-  const handleFinish = async () => {
-    if (!displayName || !discordHandle || selectedInterests.length === 0 || !connectionStyle) {
-      return
-    }
-
-    setLoading(true)
-    
-    // Create profile
-    const mockUserId = `user_${Date.now()}`
+  const handleNext = () => {
+    // Create simple profile and go straight to swipe
     const profile = {
-      id: mockUserId,
-      display_name: displayName,
-      interests: selectedInterests,
-      connection_style: connectionStyle,
-      created_at: new Date().toISOString(),
-      // Use provided Discord handle
-      discord_id: `demo_${mockUserId}`,
-      discord_username: discordHandle,
-      discord_avatar_url: undefined,
-      profile_picture_url: undefined,
-      connection_preferences: [connectionStyle],
-      availability: 'Afternoons',
-      voice_intro: `Hi! I'm ${displayName}. I'm interested in ${selectedInterests.join(', ')}. I love connecting through ${connectionStyle}. Looking forward to meeting fellow Network School members!`,
-      updated_at: new Date().toISOString()
+      id: `user_${Date.now()}`,
+      display_name: displayName || 'Demo User',
+      discord_username: 'demo_user_123',
+      interests: [selectedInterest || '🤖 AI & Tech'],
+      connection_style: '☕ Coffee Chat',
+      created_at: new Date().toISOString()
     }
     
     localStorage.setItem('demo_profile', JSON.stringify(profile))
-    localStorage.setItem('demo_user_id', mockUserId)
     
-    // Create some demo matches for a better demo experience
+    // Create demo matches
     const demoMatches = [
       {
         id: 'match_1',
         profile: {
-          id: 'demo_sarah',
           display_name: 'Sarah Chen',
-          discord_username: 'sarah_chen_789',
-          interests: ['🤖 AI & Tech', '🚀 Startups', '☕ Coffee Chat'],
-          connection_style: '💡 Brainstorm',
-          voice_intro: 'Hey! I\'m Sarah, building AI tools for creators. Love deep conversations about tech and philosophy over coffee.',
-          connection_preferences: ['💡 Brainstorm', '☕ Coffee Chat'],
-          availability: 'Mornings'
-        },
-        matchedAt: new Date().toISOString()
+          discord_username: 'sarahchen#4521'
+        }
       },
       {
-        id: 'match_2',
+        id: 'match_2', 
         profile: {
-          id: 'demo_marcus',
           display_name: 'Marcus Rivera',
-          discord_username: 'marcus_dj_456',
-          interests: ['🔥 The Burn', '🎵 Music & DJs', '🧠 Philosophy'],
-          connection_style: '🏃 Activities',
-          voice_intro: 'What\'s up! I\'m Marcus, a DJ and music producer. Always down for adventures and philosophical discussions.',
-          connection_preferences: ['🏃 Activities', '🗣️ Deep Talks'],
-          availability: 'Evenings'
-        },
-        matchedAt: new Date().toISOString()
+          discord_username: 'marcusbeats#7823'
+        }
       }
     ]
     
     localStorage.setItem('demo_matches', JSON.stringify(demoMatches))
     
-    // Go to swipe
-    setTimeout(() => {
-      router.push('/swipe')
-    }, 500)
+    // Go straight to swipe
+    router.push('/swipe')
   }
 
   return (
@@ -106,57 +71,64 @@ export default function ProfileSetup() {
       <div className="max-w-2xl mx-auto px-6 py-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-light mb-4">
-            Let&apos;s set up your profile
+            Welcome to NS Friender
           </h1>
           <p className="text-xl opacity-80">
-            Quick setup to start connecting
+            Let's set up your profile
           </p>
         </div>
         
         <div className="space-y-12">
-          {/* Name and Discord Input */}
-          <div className="space-y-6">
-            <div>
-              <label className="block text-sm opacity-80 mb-2">Your name</label>
-              <input
-                type="text"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                placeholder="John Doe"
-                className="w-full px-6 py-4 bg-transparent border border-white/30 rounded-full text-white placeholder-gray-500 focus:outline-none focus:border-white transition-all"
-                style={{
-                  fontSize: '1rem',
-                  fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif',
-                }}
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm opacity-80 mb-2">Discord handle</label>
-              <input
-                type="text"
-                value={discordHandle}
-                onChange={(e) => setDiscordHandle(e.target.value)}
-                placeholder="username#1234"
-                className="w-full px-6 py-4 bg-transparent border border-white/30 rounded-full text-white placeholder-gray-500 focus:outline-none focus:border-white transition-all"
-                style={{
-                  fontSize: '1rem',
-                  fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif',
-                }}
+          {/* Profile Photo */}
+          <div className="text-center">
+            <h2 className="text-2xl mb-6">Add your photo</h2>
+            <div className="flex justify-center mb-6">
+              <div 
+                onClick={() => fileInputRef.current?.click()}
+                className="w-32 h-32 rounded-full bg-white/10 border-2 border-dashed border-white/30 flex items-center justify-center cursor-pointer hover:border-white/60 transition-all overflow-hidden"
+              >
+                {profileImage ? (
+                  <img 
+                    src={profileImage} 
+                    alt="Profile" 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <Camera size={32} className="text-white/50" />
+                )}
+              </div>
+              <input 
+                ref={fileInputRef}
+                type="file" 
+                accept="image/*" 
+                onChange={handleImageUpload}
+                className="hidden"
               />
             </div>
           </div>
-          {/* Interests */}
+
+          {/* Name Input */}
           <div className="text-center">
-            <h2 className="text-2xl mb-6">What excites you?</h2>
-            <p className="text-sm opacity-60 mb-6">Pick up to 3</p>
+            <h2 className="text-2xl mb-6">What's your name?</h2>
+            <input
+              type="text"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              placeholder="Enter your name"
+              className="w-full max-w-sm mx-auto block px-6 py-3 bg-white/10 border border-white/30 rounded-full text-center text-white placeholder-white/50 focus:outline-none focus:border-white/60 transition-all"
+            />
+          </div>
+
+          {/* Interest Selection */}
+          <div className="text-center">
+            <h2 className="text-2xl mb-6">Pick one interest</h2>
             <div className="flex flex-wrap gap-3 justify-center">
               {INTERESTS.map(interest => (
                 <button
                   key={interest}
-                  onClick={() => toggleInterest(interest)}
+                  onClick={() => setSelectedInterest(interest)}
                   className={`px-6 py-3 rounded-full border transition-all ${
-                    selectedInterests.includes(interest)
+                    selectedInterest === interest
                       ? 'bg-white text-black border-white'
                       : 'bg-transparent text-white border-white/30 hover:border-white/60'
                   }`}
@@ -167,48 +139,14 @@ export default function ProfileSetup() {
             </div>
           </div>
 
-          {/* Connection Style */}
-          <div className="text-center">
-            <h2 className="text-2xl mb-6">How do you like to connect?</h2>
-            <div className="flex flex-wrap gap-3 justify-center">
-              {WAYS_TO_CONNECT.map(style => (
-                <button
-                  key={style}
-                  onClick={() => setConnectionStyle(style)}
-                  className={`px-6 py-3 rounded-full border transition-all ${
-                    connectionStyle === style
-                      ? 'bg-white text-black border-white'
-                      : 'bg-transparent text-white border-white/30 hover:border-white/60'
-                  }`}
-                >
-                  {style}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Action Button */}
+          {/* Next Button */}
           <div className="text-center pt-8">
             <button
-              onClick={handleFinish}
-              disabled={loading || !displayName || !discordHandle || selectedInterests.length === 0 || !connectionStyle}
-              className={`px-12 py-4 rounded-full text-lg font-medium transition-all ${
-                displayName && discordHandle && selectedInterests.length > 0 && connectionStyle
-                  ? 'bg-white text-black hover:scale-105'
-                  : 'bg-white/20 text-white/50 cursor-not-allowed'
-              }`}
+              onClick={handleNext}
+              className="px-12 py-4 rounded-full text-lg font-medium transition-all bg-white text-black hover:scale-105"
             >
-              {loading ? <LoadingSpinner size="sm" /> : 'Start Connecting →'}
+              Next →
             </button>
-            
-            {(!displayName || !discordHandle || selectedInterests.length === 0 || !connectionStyle) && (
-              <p className="mt-4 text-sm opacity-60">
-                {!displayName ? 'Enter your name' :
-                 !discordHandle ? 'Enter your Discord handle' :
-                 selectedInterests.length === 0 ? 'Select at least one interest' :
-                 !connectionStyle ? 'Select how you like to connect' : ''}
-              </p>
-            )}
           </div>
         </div>
       </div>

@@ -10,6 +10,7 @@ const DEMO_PROFILES = [
   {
     id: '1',
     display_name: 'Sarah Chen',
+    discord_username: 'sarahchen#4521',
     interests: ['🤖 AI & Tech', '🚀 Startups', '☕ Coffee Chat'],
     connection_style: '💡 Brainstorm',
     bio: 'Building AI tools for creators. Love deep conversations about tech and philosophy over coffee.',
@@ -18,6 +19,7 @@ const DEMO_PROFILES = [
   {
     id: '2',
     display_name: 'Marcus Rivera',
+    discord_username: 'marcusbeats#7823',
     interests: ['🔥 The Burn', '🎵 Music & DJs', '🧠 Philosophy'],
     connection_style: '🏃 Activities',
     bio: 'DJ and music producer. Always down for adventures and philosophical discussions.',
@@ -26,6 +28,7 @@ const DEMO_PROFILES = [
   {
     id: '3',
     display_name: 'Emily Zhang',
+    discord_username: 'emilyzhang#9012',
     interests: ['💰 Crypto', '🍜 Foodie', '🚀 Startups'],
     connection_style: '🍽️ Grab a Meal',
     bio: 'Web3 founder exploring the intersection of food and blockchain. Let\'s grab the best ramen in town!',
@@ -34,6 +37,7 @@ const DEMO_PROFILES = [
   {
     id: '4',
     display_name: 'Alex Thompson',
+    discord_username: 'alexbio#3456',
     interests: ['🧬 Longevity', '🏃 Activities', '🤖 AI & Tech'],
     connection_style: '💻 Co-working',
     bio: 'Biohacker and fitness enthusiast. Building longevity tech and always up for a workout.',
@@ -42,6 +46,7 @@ const DEMO_PROFILES = [
   {
     id: '5',
     display_name: 'Priya Patel',
+    discord_username: 'priyafilms#2345',
     interests: ['🎬 Filmmaking', '🧠 Philosophy', '☕ Coffee Chat'],
     connection_style: '🗣️ Deep Talks',
     bio: 'Documentary filmmaker exploring human stories. Love meaningful conversations.',
@@ -193,11 +198,17 @@ export default function SwipePage() {
       {/* Match Notification */}
       {showMatch && (
         <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 fade-in">
-          <div className="text-center">
-            <h1 className="text-6xl mb-6">It&apos;s a Match! 🎉</h1>
-            <p className="text-2xl opacity-80">
+          <div className="bg-black border border-white rounded-3xl p-8 max-w-sm mx-auto text-center">
+            <h1 className="text-6xl mb-6">🎉</h1>
+            <h2 className="text-3xl mb-4">It&apos;s a Match!</h2>
+            <p className="text-xl mb-6">
               You and {currentProfile.display_name} liked each other!
             </p>
+            <div className="p-4 bg-white/10 rounded-2xl mb-6">
+              <p className="text-sm opacity-60 mb-2">Discord:</p>
+              <p className="font-mono text-lg">{currentProfile.discord_username}</p>
+            </div>
+            <p className="text-sm opacity-60">Add them on Discord to connect!</p>
           </div>
         </div>
       )}
