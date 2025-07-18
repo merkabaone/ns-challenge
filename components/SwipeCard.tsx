@@ -79,14 +79,20 @@ export function SwipeCard({ profile, onSwipeLeft, onSwipeRight, sharedInterests 
         <div className="absolute bottom-0 left-0 right-0 p-6 text-white z-20">
           <h3 className="text-3xl font-bold mb-2">{profile.display_name}</h3>
           
-          <div className="flex items-center gap-4 mb-4 text-sm">
-            <div className="flex items-center gap-1">
-              <MapPin className="h-4 w-4" />
-              {profile.connection_preferences?.join(' • ') || 'Open to connect'}
+          <div className="mb-4 space-y-2 text-sm">
+            <div className="flex items-start gap-2">
+              <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
+              <div className="flex flex-wrap gap-1">
+                {profile.connection_preferences?.map((pref, index) => (
+                  <span key={index}>
+                    {pref}{index < profile.connection_preferences.length - 1 && ' •'}
+                  </span>
+                )) || 'Open to connect'}
+              </div>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
               <Clock className="h-4 w-4" />
-              {profile.availability}
+              <span>{profile.availability}</span>
             </div>
           </div>
 

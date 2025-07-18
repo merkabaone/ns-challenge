@@ -166,20 +166,29 @@ export default function SwipePage() {
   const currentProfile = profiles[currentIndex]
 
   return (
-    <main className="dark-container fade-in flex flex-col items-center justify-center">
-      <div className="w-full max-w-md space-y-4">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold">Find Your Match!</h1>
-          <button
-            onClick={() => router.push('/matches')}
-            className="dark-button dark-button-outline text-sm"
-          >
-            View Matches
-          </button>
+    <main className="dark-container fade-in">
+      <div className="max-w-2xl mx-auto">
+        <div className="text-center mb-12">
+          <h1 className="mb-6">Discover Connections</h1>
+          <p className="text-xl font-light opacity-60">
+            Swipe right to connect, left to pass
+          </p>
         </div>
-        <p className="text-sm text-center mb-4" style={{ color: 'hsl(var(--muted-foreground))' }}>
-          Swipe or use arrow keys (← →) to navigate
-        </p>
+
+        <div className="w-full max-w-md mx-auto space-y-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-sm opacity-60">← Pass</span>
+              <span className="text-sm opacity-60">|</span>
+              <span className="text-sm opacity-60">Connect →</span>
+            </div>
+            <button
+              onClick={() => router.push('/matches')}
+              className="dark-link text-sm uppercase tracking-wide"
+            >
+              View Matches
+            </button>
+          </div>
         
         {currentProfile ? (
           <>

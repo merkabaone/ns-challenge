@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Camera, X, Mic, Square } from 'lucide-react'
+import { Camera, X } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { VoiceIntro } from '@/components/VoiceIntro'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
@@ -104,8 +104,20 @@ export default function ProfileSetup() {
   }
 
   const handleContinueToVoice = () => {
-    if (!displayName || selectedInterests.length === 0 || connectionPreferences.length === 0 || !availability) {
-      alert('Please fill in all fields before continuing')
+    if (!displayName) {
+      alert('Please enter your display name')
+      return
+    }
+    if (selectedInterests.length !== 3) {
+      alert('Please select exactly 3 interests')
+      return
+    }
+    if (connectionPreferences.length !== 3) {
+      alert('Please select exactly 3 ways to connect')
+      return
+    }
+    if (!availability) {
+      alert('Please select your availability')
       return
     }
     setShowVoiceIntro(true)
@@ -158,30 +170,29 @@ export default function ProfileSetup() {
     return (
       <main className="dark-container fade-in">
         <div className="max-w-2xl mx-auto">
-          <h1 className="text-center mb-8">Introduce Yourself</h1>
+          <h1 className="text-center mb-12">Introduce Yourself</h1>
           
-          <div className="space-y-6">
+          <div className="space-y-8">
             <div className="text-center mb-8">
-              <p className="text-lg mb-4">
-                Tell us about yourself! Share what brings you to Network School, 
-                what you&apos;re working on, and what kind of connections you&apos;re looking for.
+              <p className="text-xl font-light mb-4">
+                Tell us about yourself in 60 seconds or less
               </p>
-              <p className="text-sm" style={{ color: 'hsl(var(--muted-foreground))' }}>
-                Tip: Keep it under 60 seconds for the best experience
+              <p className="text-sm opacity-60">
+                Share what brings you here and what connections you&apos;re looking for
               </p>
             </div>
 
             <VoiceIntro onTranscriptionComplete={handleTranscription} />
 
             {voiceIntro && (
-              <div className="dark-card">
-                <h3 className="font-semibold mb-2">Your Introduction:</h3>
-                <p className="italic" style={{ color: 'hsl(var(--muted-foreground))' }}>
+              <div className="dark-card slide-up">
+                <h3 className="font-semibold mb-4">Your Introduction</h3>
+                <p className="font-light italic opacity-80">
                   &ldquo;{voiceIntro}&rdquo;
                 </p>
                 <button 
                   onClick={() => setVoiceIntro('')}
-                  className="dark-link mt-2 text-sm"
+                  className="dark-link mt-4 text-sm"
                 >
                   Re-record
                 </button>
@@ -203,7 +214,7 @@ export default function ProfileSetup() {
                 disabled={loading || !voiceIntro}
                 className="dark-button flex-1"
               >
-                {loading ? <LoadingSpinner size="sm" /> : 'Start Swiping!'}
+                {loading ? <LoadingSpinner size="sm" /> : 'Start Swiping'}
               </button>
             </div>
           </div>
@@ -215,41 +226,34 @@ export default function ProfileSetup() {
   return (
     <main className="dark-container fade-in">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-center mb-8">Complete Your Profile</h1>
+        <h1 className="text-center mb-12">Create Your Profile</h1>
         
-        <div className="space-y-6">
+        <div className="space-y-8">
           {/* Profile Picture */}
           <div className="dark-card">
-            <h2 className="text-lg font-semibold mb-4">Profile Picture</h2>
-            <div className="flex flex-col items-center space-y-4">
+            <h2 className="text-2xl mb-6">Profile Picture</h2>
+            <div className="flex flex-col items-center space-y-6">
               {profilePicture ? (
                 <div className="relative">
                   <img 
                     src={profilePicture} 
                     alt="Profile" 
-                    className="w-32 h-32 rounded-full object-cover" 
-                    style={{ border: '2px solid hsl(var(--border))' }}
+                    className="w-40 h-40 rounded-full object-cover" 
+                    style={{ border: '2px solid white' }}
                   />
                   <button
-                    className="absolute -top-2 -right-2 rounded-full p-1.5 transition-opacity hover:opacity-80"
-                    style={{ 
-                      backgroundColor: 'hsl(var(--primary))', 
-                      color: 'hsl(var(--primary-foreground))'
-                    }}
+                    className="absolute -top-2 -right-2 rounded-full p-2 bg-white text-black hover:scale-110 transition-transform"
                     onClick={() => setProfilePicture(null)}
                   >
-                    <X className="h-4 w-4" />
+                    <X className="h-5 w-5" />
                   </button>
                 </div>
               ) : (
                 <div 
-                  className="w-32 h-32 rounded-full flex items-center justify-center"
-                  style={{ 
-                    backgroundColor: 'hsl(var(--secondary))', 
-                    border: '2px solid hsl(var(--border))' 
-                  }}
+                  className="w-40 h-40 rounded-full flex items-center justify-center"
+                  style={{ border: '2px solid white' }}
                 >
-                  <Camera className="h-12 w-12" style={{ color: 'hsl(var(--muted-foreground))' }} />
+                  <Camera className="h-12 w-12 opacity-60" />
                 </div>
               )}
               
@@ -273,12 +277,12 @@ export default function ProfileSetup() {
             </div>
 
             {showCamera && (
-              <div className="space-y-4 mt-4">
+              <div className="space-y-4 mt-6">
                 <video ref={videoRef} autoPlay className="w-full rounded-lg" />
                 <canvas ref={canvasRef} className="hidden" />
                 <div className="flex gap-4 justify-center">
-                  <button onClick={capturePhoto} className="dark-link">Capture</button>
-                  <button onClick={stopCamera} className="dark-link">Cancel</button>
+                  <button onClick={capturePhoto} className="dark-button">Capture</button>
+                  <button onClick={stopCamera} className="dark-button dark-button-outline">Cancel</button>
                 </div>
               </div>
             )}
@@ -286,12 +290,12 @@ export default function ProfileSetup() {
 
           {/* Display Name */}
           <div className="dark-card">
-            <h2 className="text-lg font-semibold mb-4">Display Name</h2>
+            <h2 className="text-2xl mb-6">Display Name</h2>
             <input
               id="displayName"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              placeholder="How should we call you?"
+              placeholder="What should we call you?"
               className="dark-input"
               maxLength={50}
               required
@@ -301,8 +305,8 @@ export default function ProfileSetup() {
 
           {/* Interests */}
           <div className="dark-card">
-            <h2 className="text-lg font-semibold mb-4">My Interests (Select 3)</h2>
-            <div className="flex flex-wrap gap-2">
+            <h2 className="text-2xl mb-6">Interests <span className="text-lg font-light opacity-60">(Select 3)</span></h2>
+            <div className="flex flex-wrap gap-3">
               {INTERESTS.map(interest => (
                 <button
                   key={interest}
@@ -318,8 +322,8 @@ export default function ProfileSetup() {
 
           {/* Connection Preference */}
           <div className="dark-card">
-            <h2 className="text-lg font-semibold mb-4">How I Like to Connect (Select 3)</h2>
-            <div className="flex flex-wrap gap-2">
+            <h2 className="text-2xl mb-6">How I Connect <span className="text-lg font-light opacity-60">(Select 3)</span></h2>
+            <div className="flex flex-wrap gap-3">
               {CONNECTION_PREFERENCES.map(pref => (
                 <button
                   key={pref}
@@ -335,8 +339,8 @@ export default function ProfileSetup() {
 
           {/* Availability */}
           <div className="dark-card">
-            <h2 className="text-lg font-semibold mb-4">When I&apos;m Free</h2>
-            <div className="flex flex-wrap gap-2">
+            <h2 className="text-2xl mb-6">Availability</h2>
+            <div className="flex flex-wrap gap-3">
               {AVAILABILITY.map(time => (
                 <button
                   key={time}
@@ -352,10 +356,26 @@ export default function ProfileSetup() {
           {/* Continue Button */}
           <button 
             onClick={handleContinueToVoice} 
-            disabled={loading || !displayName || selectedInterests.length === 0 || connectionPreferences.length === 0 || !availability}
+            disabled={loading || !displayName || selectedInterests.length !== 3 || connectionPreferences.length !== 3 || !availability}
             className="dark-button w-full"
           >
-            Continue to Voice Introduction
+            {(() => {
+              const needInterests = 3 - selectedInterests.length
+              const needConnections = 3 - connectionPreferences.length
+              
+              if (needInterests > 0 && needConnections > 0) {
+                return `Select ${needInterests} more ${needInterests === 1 ? 'interest' : 'interests'} and ${needConnections} more ${needConnections === 1 ? 'way' : 'ways'} to connect`
+              } else if (needInterests > 0) {
+                return `Select ${needInterests} more ${needInterests === 1 ? 'interest' : 'interests'}`
+              } else if (needConnections > 0) {
+                return `Select ${needConnections} more ${needConnections === 1 ? 'way' : 'ways'} to connect`
+              } else if (!displayName) {
+                return 'Enter your display name'
+              } else if (!availability) {
+                return 'Select your availability'
+              }
+              return 'Continue'
+            })()}
           </button>
         </div>
       </div>
