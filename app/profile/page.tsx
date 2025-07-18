@@ -115,31 +115,32 @@ export default function ProfileSetup() {
 
     setLoading(true)
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        router.push('/')
-        return
+      // For demo purposes, create a mock profile without authentication
+      const mockUserId = `demo_${Date.now()}`
+      
+      // Store in localStorage for demo
+      const profile = {
+        id: mockUserId,
+        discord_id: mockUserId,
+        discord_username: `${displayName.toLowerCase().replace(/\s+/g, '_')}#0000`,
+        discord_avatar_url: profilePicture,
+        display_name: displayName,
+        profile_picture_url: profilePicture,
+        interests: selectedInterests,
+        connection_preference: connectionPreference,
+        availability: availability,
+        voice_intro: voiceIntro,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }
-
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          display_name: displayName,
-          profile_picture_url: profilePicture,
-          interests: selectedInterests,
-          connection_preference: connectionPreference,
-          availability: availability,
-          voice_intro: voiceIntro,
-          updated_at: new Date().toISOString()
-        })
-        .eq('discord_id', user.id)
-
-      if (error) throw error
-
+      
+      localStorage.setItem('demo_profile', JSON.stringify(profile))
+      localStorage.setItem('demo_user_id', mockUserId)
+      
       router.push('/swipe')
     } catch (error) {
-      logger.error('Error updating profile:', error)
-      alert('Failed to update profile. Please try again.')
+      logger.error('Error creating profile:', error)
+      alert('Failed to create profile. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -194,7 +195,7 @@ export default function ProfileSetup() {
                 disabled={loading || !voiceIntro}
                 className="dark-button flex-1"
               >
-                {loading ? 'Saving...' : 'Start Swiping!'}
+                {loading ? <LoadingSpinner size="sm" /> : 'Start Swiping!'}
               </button>
             </div>
           </div>
