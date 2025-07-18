@@ -8,14 +8,24 @@ export default function Home() {
   const router = useRouter()
   
   useEffect(() => {
-    // Clear any existing demo profile to start fresh
-    localStorage.removeItem('demo_profile')
-    localStorage.removeItem('demo_user_id')
-    localStorage.removeItem('temp_profile')
-    localStorage.removeItem('demo_matches')
+    // Check if user already has a profile
+    const existingProfile = localStorage.getItem('demo_profile')
     
-    // Automatically redirect to profile page
-    router.push('/profile')
+    if (existingProfile) {
+      // User has a profile, go straight to swipe
+      router.push('/swipe')
+    } else {
+      // No profile, clear any old data and go to profile setup
+      localStorage.removeItem('demo_profile')
+      localStorage.removeItem('demo_user_id')
+      localStorage.removeItem('temp_profile')
+      localStorage.removeItem('demo_matches')
+      localStorage.removeItem('matches')
+      localStorage.removeItem('liked_profiles')
+      
+      // Redirect to profile setup
+      router.push('/profile')
+    }
   }, [router])
 
   return (

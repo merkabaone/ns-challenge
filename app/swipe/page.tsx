@@ -35,13 +35,23 @@ export default function SwipePage() {
         const profilesData = await response.json()
         setProfiles(profilesData)
 
-        // Get user profile
+        // Get user profile - create default if none exists
         const profile = localStorage.getItem('demo_profile')
         if (!profile) {
-          router.push('/')
-          return
+          // Create a default profile so user can still use the app
+          const defaultProfile = {
+            id: `user_${Date.now()}`,
+            display_name: 'Demo User',
+            discord_username: `user${Date.now()}`,
+            interests: ['🤖 AI & Tech'],
+            connection_style: '☕ Coffee Chat',
+            created_at: new Date().toISOString()
+          }
+          localStorage.setItem('demo_profile', JSON.stringify(defaultProfile))
+          setUserProfile(defaultProfile)
+        } else {
+          setUserProfile(JSON.parse(profile))
         }
-        setUserProfile(JSON.parse(profile))
 
         // Load existing likes and matches
         const savedLikes = localStorage.getItem('liked_profiles')
