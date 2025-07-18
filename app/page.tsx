@@ -17,7 +17,15 @@ export default function Home() {
   }, [router])
 
   const beginAction = () => {
-    router.push('/profile')
+    console.log('Begin button clicked')
+    alert('Button clicked! Navigating to profile...')
+    try {
+      router.push('/profile')
+      console.log('Router push called')
+    } catch (error) {
+      console.error('Router error:', error)
+      alert('Error navigating: ' + error)
+    }
   }
 
   return (
@@ -37,6 +45,8 @@ export default function Home() {
           onClick={beginAction}
           className="group inline-flex items-center justify-center gap-3 bg-white rounded-full transition-all hover:gap-4 hover:scale-105"
           style={{
+            position: 'relative',
+            zIndex: 10,
             fontSize: '1.125rem',
             padding: '1.25rem 2.5rem',
             minWidth: '240px',

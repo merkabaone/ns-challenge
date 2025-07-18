@@ -157,7 +157,7 @@ export default function SwipePage() {
 
   if (loading) {
     return (
-      <div className="dark-container flex items-center justify-center">
+      <div className="dark-container flex items-center justify-center min-h-screen">
         <LoadingSpinner message="Loading profiles..." size="lg" />
       </div>
     )
