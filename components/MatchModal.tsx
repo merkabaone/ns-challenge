@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Heart, Copy, Check } from 'lucide-react'
 import { type Profile } from '@/lib/supabase'
@@ -12,7 +13,20 @@ interface MatchModalProps {
 }
 
 export function MatchModal({ matchedProfile, onClose }: MatchModalProps) {
+  const router = useRouter()
   const [copied, setCopied] = useState(false)
+
+  useEffect(() => {
+    // Save match to localStorage
+    const existingMatches = JSON.parse(localStorage.getItem('demo_matches') || '[]')
+    const newMatch = {
+      id: `match_${Date.now()}`,
+      profile: matchedProfile,
+      matchedAt: new Date().toISOString()
+    }
+    const updatedMatches = [...existingMatches, newMatch]
+    localStorage.setItem('demo_matches', JSON.stringify(updatedMatches))
+  }, [matchedProfile])
 
   const copyDiscordHandle = () => {
     navigator.clipboard.writeText(`${matchedProfile.discord_username}`)
@@ -94,9 +108,17 @@ export function MatchModal({ matchedProfile, onClose }: MatchModalProps) {
             Add them as a friend on Discord to start chatting!
           </p>
 
-          <button onClick={onClose} className="dark-button w-full">
-            Keep Swiping
-          </button>
+          <div className="flex gap-3">
+            <button 
+              onClick={() => router.push('/matches')} 
+              className="dark-button dark-button-outline flex-1"
+            >
+              View Matches
+            </button>
+            <button onClick={onClose} className="dark-button flex-1">
+              Keep Swiping
+            </button>
+          </div>
         </div>
       </motion.div>
     </div>

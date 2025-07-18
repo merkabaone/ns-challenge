@@ -168,7 +168,15 @@ export default function SwipePage() {
   return (
     <main className="dark-container fade-in flex flex-col items-center justify-center">
       <div className="w-full max-w-md space-y-4">
-        <h1 className="text-2xl font-bold text-center mb-2">Find Your Match!</h1>
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-bold">Find Your Match!</h1>
+          <button
+            onClick={() => router.push('/matches')}
+            className="dark-button dark-button-outline text-sm"
+          >
+            View Matches
+          </button>
+        </div>
         <p className="text-sm text-center mb-4" style={{ color: 'hsl(var(--muted-foreground))' }}>
           Swipe or use arrow keys (← →) to navigate
         </p>
