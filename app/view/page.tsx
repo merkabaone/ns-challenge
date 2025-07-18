@@ -160,7 +160,7 @@ export default function ViewProfiles() {
           <div className="mt-16 text-center">
             <div className="inline-block px-6 py-3 bg-white/5 rounded-full">
               <p className="text-sm">
-                You're logged in as <strong>{currentUser.display_name}</strong>
+                You&apos;re logged in as <strong>{currentUser.display_name}</strong>
               </p>
             </div>
           </div>

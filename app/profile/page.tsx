@@ -74,7 +74,7 @@ export default function ProfileSetup() {
             Welcome to NS Friender
           </h1>
           <p className="text-xl opacity-80">
-            Let's set up your profile
+            Let&apos;s set up your profile
           </p>
         </div>
         
@@ -109,7 +109,7 @@ export default function ProfileSetup() {
 
           {/* Name Input */}
           <div className="text-center">
-            <h2 className="text-2xl mb-6">What's your name?</h2>
+            <h2 className="text-2xl mb-6">What&apos;s your name?</h2>
             <input
               type="text"
               value={displayName}

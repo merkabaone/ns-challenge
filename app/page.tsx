@@ -47,13 +47,14 @@ export default function Home() {
         
         <button 
           onClick={handleBegin}
-          className="px-12 py-4 bg-white text-black rounded-full transition-all hover:scale-105"
+          className="px-16 py-6 bg-white text-black rounded-full transition-all hover:scale-105 hover:shadow-2xl"
           style={{
-            fontSize: '1.25rem',
+            fontSize: '1.75rem',
             fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif',
             fontWeight: '600',
-            letterSpacing: '0.08em',
-            boxShadow: '0 4px 20px rgba(255, 255, 255, 0.1)'
+            letterSpacing: '0.1em',
+            boxShadow: '0 8px 32px rgba(255, 255, 255, 0.2)',
+            minWidth: '280px'
           }}
         >
           Begin

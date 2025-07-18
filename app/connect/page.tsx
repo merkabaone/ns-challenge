@@ -20,6 +20,7 @@ const WAYS_TO_CONNECT = [
 export default function ConnectionPreference() {
   const router = useRouter()
   const [selectedConnection, setSelectedConnection] = useState('')
+  const [discordHandle, setDiscordHandle] = useState('')
   const [profileData, setProfileData] = useState<any>(null)
 
   useEffect(() => {
@@ -33,7 +34,7 @@ export default function ConnectionPreference() {
   }, [router])
 
   const handleSubmit = () => {
-    if (!selectedConnection || !profileData) {
+    if (!selectedConnection || !discordHandle || !profileData) {
       return
     }
 
@@ -46,9 +47,9 @@ export default function ConnectionPreference() {
       connection_preferences: [selectedConnection],
       profile_picture_url: profileData.profileImage,
       created_at: new Date().toISOString(),
-      // Mock fields for demo
+      // Use provided Discord handle
       discord_id: `demo_${mockUserId}`,
-      discord_username: `${profileData.displayName.toLowerCase().replace(/\s+/g, '')}_${Math.floor(Math.random() * 1000)}`,
+      discord_username: discordHandle,
       discord_avatar_url: profileData.profileImage,
     }
     
@@ -85,8 +86,26 @@ export default function ConnectionPreference() {
         </div>
         
         <div className="space-y-8">
+          {/* Discord Handle Input */}
+          <div>
+            <h2 className="text-2xl mb-4 text-center">What&apos;s your Discord handle?</h2>
+            <input
+              type="text"
+              value={discordHandle}
+              onChange={(e) => setDiscordHandle(e.target.value)}
+              placeholder="username#1234"
+              className="w-full px-6 py-4 bg-transparent border border-white/30 rounded-full text-white placeholder-gray-500 focus:outline-none focus:border-white transition-all"
+              style={{
+                fontSize: '1rem',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif',
+              }}
+            />
+          </div>
+
           {/* Connection Options */}
-          <div className="grid grid-cols-1 gap-3">
+          <div>
+            <h2 className="text-2xl mb-4 text-center">How do you like to connect?</h2>
+            <div className="grid grid-cols-1 gap-3">
             {WAYS_TO_CONNECT.map(connection => (
               <button
                 key={connection}
