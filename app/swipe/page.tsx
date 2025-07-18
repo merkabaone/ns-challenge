@@ -180,16 +180,18 @@ export default function SwipePage() {
           <div className="flex justify-center gap-8 mt-8">
             <button
               onClick={() => handleSwipe(false)}
-              className="w-16 h-16 rounded-full bg-white/10 hover:bg-red-500/20 flex items-center justify-center transition-all hover:scale-110"
+              className="w-20 h-20 rounded-full bg-white/90 hover:bg-red-500 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+              style={{ boxShadow: '0 8px 32px rgba(255, 255, 255, 0.2)' }}
             >
-              <X size={28} className="text-red-400" />
+              <X size={36} className="text-black hover:text-white" />
             </button>
             
             <button
               onClick={() => handleSwipe(true)}
-              className="w-16 h-16 rounded-full bg-white/10 hover:bg-green-500/20 flex items-center justify-center transition-all hover:scale-110"
+              className="w-20 h-20 rounded-full bg-white/90 hover:bg-green-500 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+              style={{ boxShadow: '0 8px 32px rgba(255, 255, 255, 0.2)' }}
             >
-              <Heart size={28} className="text-green-400" />
+              <Heart size={36} className="text-black hover:text-white" />
             </button>
           </div>
         </div>

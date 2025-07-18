@@ -78,10 +78,10 @@ export default function ConnectionPreference() {
       <div className="max-w-2xl mx-auto px-6 py-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-light mb-4">
-            How do you want to connect?
+            Almost done!
           </h1>
           <p className="text-xl opacity-80">
-            Choose your preferred way to meet
+            Add your Discord handle so people can connect
           </p>
         </div>
         
@@ -119,15 +119,16 @@ export default function ConnectionPreference() {
                 {connection}
               </button>
             ))}
+            </div>
           </div>
 
           {/* Submit Button */}
           <div className="text-center pt-8">
             <button
               onClick={handleSubmit}
-              disabled={!selectedConnection}
+              disabled={!selectedConnection || !discordHandle}
               className={`px-12 py-4 rounded-full text-lg font-medium transition-all ${
-                selectedConnection
+                selectedConnection && discordHandle
                   ? 'bg-white text-black hover:scale-105'
                   : 'bg-white/20 text-white/50 cursor-not-allowed'
               }`}

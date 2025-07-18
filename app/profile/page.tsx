@@ -143,7 +143,12 @@ export default function ProfileSetup() {
           <div className="text-center pt-8">
             <button
               onClick={handleNext}
-              className="px-12 py-4 rounded-full text-lg font-medium transition-all bg-white text-black hover:scale-105"
+              className="px-16 py-6 rounded-full text-2xl font-bold transition-all bg-white text-black hover:scale-105 hover:shadow-2xl active:scale-95"
+              style={{
+                boxShadow: '0 12px 48px rgba(255, 255, 255, 0.3)',
+                minWidth: '240px',
+                letterSpacing: '0.05em'
+              }}
             >
               Next →
             </button>
