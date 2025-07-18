@@ -177,6 +177,7 @@ Whisper Key: ${env.whisperKey.value}`,
   // Run tests on component mount
   useEffect(() => {
     runAllTests()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const getStatusIcon = (status: TestResult['status']) => {

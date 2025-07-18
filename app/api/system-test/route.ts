@@ -5,7 +5,7 @@ export async function GET() {
   const results = {
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV,
-    tests: {}
+    tests: {} as any
   }
 
   // Test 1: Environment Variables
