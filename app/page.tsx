@@ -23,25 +23,22 @@ export default function Home() {
   return (
     <main className="dark-container fade-in flex flex-col items-center justify-center min-h-screen">
       <div className="max-w-4xl mx-auto text-center">
-        <h1 className="mb-6" style={{ fontSize: 'clamp(3rem, 8vw, 6rem)', lineHeight: '0.9' }}>
+        <h1 className="mb-12" style={{ fontSize: 'clamp(4rem, 10vw, 8rem)', lineHeight: '0.9' }}>
           NS Friender
         </h1>
         
-        <p className="text-2xl mb-12" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', fontWeight: '400' }}>
-          A Network School Community
-        </p>
-        
         <button 
           onClick={beginAction}
-          className="group inline-flex items-center gap-3 px-12 py-5 text-xl font-semibold rounded-full transition-all hover:gap-4"
+          className="group inline-flex items-center justify-center gap-4 text-black bg-white font-bold rounded-full transition-all hover:gap-6"
           style={{
-            backgroundColor: 'white',
-            color: 'black',
-            minWidth: '280px'
+            fontSize: '1.5rem',
+            padding: '1.5rem 3rem',
+            minWidth: '320px',
+            letterSpacing: '0.05em'
           }}
         >
           BEGIN
-          <span className="transition-transform group-hover:translate-x-1">→</span>
+          <span className="transition-transform group-hover:translate-x-1" style={{ fontSize: '1.75rem' }}>→</span>
         </button>
       </div>
     </main>

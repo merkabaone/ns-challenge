@@ -50,8 +50,8 @@ export default function TestDatabasePage() {
         discord_id: `test_${Date.now()}`,
         discord_username: 'test_user#0000',
         display_name: 'Test User',
-        interests: ['Testing', 'Database'],
-        connection_preference: 'Just Chat',
+        interests: ['AI & LLMs', 'Startups & VC', 'Philosophy & Big Ideas'],
+        connection_preferences: ['A Coffee Chat', 'Talk Philosophy & Ideas', 'Practice a Pitch'],
         availability: 'Mornings',
         voice_intro: 'This is a test profile'
       }

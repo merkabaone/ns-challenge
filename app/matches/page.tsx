@@ -268,7 +268,7 @@ export default function MatchesPage() {
               Update Profile
             </button>
           </div>
-        )}
+        </div>
       </div>
     </main>
   )

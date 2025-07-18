@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
             display_name: userMetadata.full_name || userMetadata.name || userMetadata.username || 'User',
             discord_avatar_url: userMetadata.avatar_url,
             interests: [],
-            connection_preference: '',
+            connection_preferences: [],
             availability: ''
           })
           

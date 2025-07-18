@@ -14,9 +14,9 @@ const testProfile = {
   discord_username: 'TestUser#1234',
   display_name: 'Test User',
   discord_avatar_url: 'https://example.com/avatar.png',
-  interests: ['Coding', 'Gaming', 'Reading'],
-  connection_preference: 'friends',
-  availability: 'weekends',
+  interests: ['AI & LLMs', 'Startups & VC', 'Philosophy & Big Ideas'],
+  connection_preferences: ['A Co-working Session', 'Whiteboard an Idea', 'Practice a Pitch'],
+  availability: 'Mornings',
   voice_intro: null
 };
 
@@ -26,9 +26,9 @@ const secondTestProfile = {
   discord_username: 'TestUser2#5678',
   display_name: 'Test User 2',
   discord_avatar_url: 'https://example.com/avatar2.png',
-  interests: ['Music', 'Sports', 'Travel'],
-  connection_preference: 'collaborators',
-  availability: 'evenings',
+  interests: ['Crypto & Web3', 'Music & DJs', 'The Burn'],
+  connection_preferences: ['Hit "The Burn" Together', 'A Coffee Chat', 'Talk Philosophy & Ideas'],
+  availability: 'Evenings',
   voice_intro: null
 };
 
@@ -116,7 +116,7 @@ async function testDatabase() {
     // Test 3: Update profile
     log('\nTest 3: Updating profile...', 'yellow');
     
-    const updatedInterests = ['Coding', 'Gaming', 'Reading', 'Cooking'];
+    const updatedInterests = ['AI & LLMs', 'Startups & VC', 'Foodie Culture'];
     const { error: updateError } = await supabase
       .from('profiles')
       .update({ interests: updatedInterests })
@@ -135,7 +135,7 @@ async function testDatabase() {
       .eq('id', profile1.id)
       .single();
 
-    if (!verifyError && updatedProfile.interests.length === 4) {
+    if (!verifyError && updatedProfile.interests.length === 3) {
       log(`   Updated interests: ${updatedProfile.interests.join(', ')}`, 'magenta');
     }
 

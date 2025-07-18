@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS profiles (
   discord_avatar_url TEXT,
   profile_picture_url TEXT,
   interests TEXT[] NOT NULL DEFAULT '{}',
-  connection_preference TEXT NOT NULL,
+  connection_preferences TEXT[] NOT NULL DEFAULT '{}',
   availability TEXT NOT NULL,
   voice_intro TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
