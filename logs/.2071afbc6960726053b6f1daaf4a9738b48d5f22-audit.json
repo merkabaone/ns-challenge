@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/Users/erikdesrosiers/Documents/Code/ns-coding-challenge/logs/.2071afbc6960726053b6f1daaf4a9738b48d5f22-audit.json",
+    "files": [
+        {
+            "date": 1752831860631,
+            "name": "/Users/erikdesrosiers/Documents/Code/ns-coding-challenge/logs/mcp-puppeteer-2025-07-18.log",
+            "hash": "0b68cebe2c6200ef3c2b51c2ab70a78d19046f62942d41c683d25c303fb51294"
+        }
+    ],
+    "hashType": "sha256"
+}
