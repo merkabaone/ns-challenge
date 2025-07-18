@@ -234,7 +234,7 @@ Speech API Key: ${env.speechApiKey.value}`,
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold">System Test Dashboard</h1>
         <p className="text-muted-foreground">
-          Verify your Supabase and Whisper API integration
+          Verify your Supabase and AssemblyAI integration
         </p>
       </div>
 
