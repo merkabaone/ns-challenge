@@ -246,6 +246,7 @@ export default function SwipePage() {
             </button>
           </div>
         )}
+        </div>
       </div>
 
       {showMatch && matchedProfile && (
