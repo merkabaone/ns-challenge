@@ -54,12 +54,16 @@ export default function TestPage() {
     const startTime = Date.now()
     
     try {
-      // Test if environment variable exists
-      const hasKey = process.env.WHISPER_API || process.env.NEXT_PUBLIC_WHISPER_API
+      const response = await fetch('/api/test-env')
+      const result = await response.json()
       const duration = Date.now() - startTime
       
-      if (hasKey) {
+      const whisperVar = result.variables?.find((v: any) => v.name === 'WHISPER_API')
+      
+      if (whisperVar?.present) {
         updateTest('Whisper API Key', 'success', 'API key found in environment', duration)
+      } else if (whisperVar?.hasValue && whisperVar?.isPlaceholder) {
+        updateTest('Whisper API Key', 'error', 'WHISPER_API contains placeholder value', duration)
       } else {
         updateTest('Whisper API Key', 'error', 'WHISPER_API not found in environment variables', duration)
       }
@@ -74,23 +78,14 @@ export default function TestPage() {
     const startTime = Date.now()
     
     try {
-      const requiredVars = [
-        'NEXT_PUBLIC_SUPABASE_URL',
-        'NEXT_PUBLIC_SUPABASE_ANON_KEY',
-        'WHISPER_API'
-      ]
-      
-      const missingVars = requiredVars.filter(varName => {
-        const value = process.env[varName]
-        return !value || value.includes('your-') || value.includes('YOUR_')
-      })
-      
+      const response = await fetch('/api/test-env')
+      const result = await response.json()
       const duration = Date.now() - startTime
       
-      if (missingVars.length === 0) {
-        updateTest('Environment Variables', 'success', 'All required environment variables found', duration)
+      if (result.success) {
+        updateTest('Environment Variables', 'success', result.message, duration)
       } else {
-        updateTest('Environment Variables', 'error', `Missing or placeholder values: ${missingVars.join(', ')}`, duration)
+        updateTest('Environment Variables', 'error', result.message, duration)
       }
     } catch (error) {
       const duration = Date.now() - startTime
