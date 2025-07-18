@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { Mic, Square, Loader2 } from 'lucide-react'
 import { transcribeAudio } from '@/lib/whisper'
+import { logger } from '@/lib/logger'
 
 interface VoiceIntroProps {
   onTranscriptionComplete: (transcript: string) => void
@@ -42,7 +43,7 @@ export function VoiceIntro({ onTranscriptionComplete }: VoiceIntroProps) {
           }
         } catch (err) {
           setError('Failed to transcribe audio. Please try again.')
-          console.error('Transcription error:', err)
+          logger.error('Transcription error:', err)
         } finally {
           setIsTranscribing(false)
         }
@@ -53,7 +54,7 @@ export function VoiceIntro({ onTranscriptionComplete }: VoiceIntroProps) {
       setError(null)
     } catch (err) {
       setError('Could not access microphone. Please check permissions.')
-      console.error('Recording error:', err)
+      logger.error('Recording error:', err)
     }
   }
 

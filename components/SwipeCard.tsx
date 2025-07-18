@@ -17,7 +17,7 @@ export function SwipeCard({ profile, onSwipeLeft, onSwipeRight, sharedInterests 
   const rotate = useTransform(x, [-200, 200], [-30, 30])
   const opacity = useTransform(x, [-200, -100, 0, 100, 200], [0, 1, 1, 1, 0])
 
-  const handleDragEnd = (_: any, info: any) => {
+  const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: { offset: { x: number; y: number } }) => {
     if (info.offset.x > 100) {
       onSwipeRight()
     } else if (info.offset.x < -100) {

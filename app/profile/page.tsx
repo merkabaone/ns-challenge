@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { Camera, X, Mic, Square } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { VoiceIntro } from '@/components/VoiceIntro'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { logger } from '@/lib/logger'
 import '../globals.css'
 
 const INTERESTS = [
@@ -47,7 +49,7 @@ export default function ProfileSetup() {
         setShowCamera(true)
       }
     } catch (error) {
-      console.error('Error accessing camera:', error)
+      logger.error('Error accessing camera:', error)
       alert('Could not access camera. Please use file upload instead.')
     }
   }
@@ -136,7 +138,7 @@ export default function ProfileSetup() {
 
       router.push('/swipe')
     } catch (error) {
-      console.error('Error updating profile:', error)
+      logger.error('Error updating profile:', error)
       alert('Failed to update profile. Please try again.')
     } finally {
       setLoading(false)
@@ -282,6 +284,9 @@ export default function ProfileSetup() {
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="How should we call you?"
               className="dark-input"
+              maxLength={50}
+              required
+              aria-label="Display name"
             />
           </div>
 

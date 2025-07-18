@@ -2,8 +2,64 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
+// Simple in-memory rate limiter (in production, use Redis or similar)
+const rateLimit = new Map<string, { count: number; resetTime: number }>()
+
+const RATE_LIMIT_WINDOW = 60 * 1000 // 1 minute
+const RATE_LIMIT_MAX_REQUESTS = 60 // 60 requests per minute
+
+function getRateLimitKey(request: NextRequest): string {
+  const forwarded = request.headers.get('x-forwarded-for')
+  const ip = forwarded ? forwarded.split(',')[0] : 'unknown'
+  return `${ip}:${request.nextUrl.pathname}`
+}
+
 export async function middleware(req: NextRequest) {
+  // Add security headers
   const res = NextResponse.next()
+  res.headers.set('X-Content-Type-Options', 'nosniff')
+  res.headers.set('X-Frame-Options', 'DENY')
+  res.headers.set('X-XSS-Protection', '1; mode=block')
+  res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+  res.headers.set('Permissions-Policy', 'camera=(self), microphone=(self), geolocation=()')
+
+  // Rate limiting for API routes
+  if (req.nextUrl.pathname.startsWith('/api/')) {
+    const key = getRateLimitKey(req)
+    const now = Date.now()
+    const limit = rateLimit.get(key)
+
+    if (limit) {
+      if (now < limit.resetTime) {
+        if (limit.count >= RATE_LIMIT_MAX_REQUESTS) {
+          return new NextResponse('Too Many Requests', {
+            status: 429,
+            headers: {
+              'Retry-After': String(Math.ceil((limit.resetTime - now) / 1000)),
+              'X-RateLimit-Limit': String(RATE_LIMIT_MAX_REQUESTS),
+              'X-RateLimit-Remaining': '0',
+              'X-RateLimit-Reset': new Date(limit.resetTime).toISOString(),
+            },
+          })
+        }
+        limit.count++
+      } else {
+        limit.count = 1
+        limit.resetTime = now + RATE_LIMIT_WINDOW
+      }
+    } else {
+      rateLimit.set(key, { count: 1, resetTime: now + RATE_LIMIT_WINDOW })
+    }
+
+    // Clean up old entries periodically
+    if (Math.random() < 0.01) {
+      for (const [k, v] of rateLimit.entries()) {
+        if (now > v.resetTime) {
+          rateLimit.delete(k)
+        }
+      }
+    }
+  }
   
   // Create a Supabase client configured to use cookies
   const supabase = createServerClient(

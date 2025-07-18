@@ -1,38 +1,68 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { logger } from '@/lib/logger'
 import './globals.css'
 
 export default async function Home() {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  let user = null
+  let error = null
+
+  try {
+    const supabase = createClient()
+    const { data: authData, error: authError } = await supabase.auth.getUser()
+    
+    if (authError) {
+      logger.error('Auth error:', authError)
+      error = authError
+    } else {
+      user = authData.user
+    }
+  } catch (err) {
+    logger.error('Unexpected error:', err)
+    error = err
+  }
 
   async function signInWithDiscord() {
     'use server'
-    const supabase = createClient()
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'discord',
-      options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback`,
-      },
-    })
-    
-    if (data.url) {
-      redirect(data.url)
+    try {
+      const supabase = createClient()
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'discord',
+        options: {
+          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback`,
+        },
+      })
+      
+      if (error) {
+        throw error
+      }
+      
+      if (data.url) {
+        redirect(data.url)
+      }
+    } catch (err) {
+      logger.error('Discord sign in error:', err)
+      throw new Error('Failed to sign in with Discord')
     }
   }
 
   // If user is already logged in, redirect to appropriate page
-  if (user) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('discord_id', user.id)
-      .single()
-    
-    if (profile) {
-      redirect('/swipe')
-    } else {
-      redirect('/profile')
+  if (user && !error) {
+    try {
+      const supabase = createClient()
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('discord_id', user.id)
+        .single()
+      
+      if (!profileError && profile) {
+        redirect('/swipe')
+      } else {
+        redirect('/profile')
+      }
+    } catch (err) {
+      logger.error('Profile check error:', err)
     }
   }
 

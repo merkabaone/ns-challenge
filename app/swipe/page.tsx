@@ -7,6 +7,8 @@ import { Heart, X, Sparkles } from 'lucide-react'
 import { supabase, type Profile } from '@/lib/supabase'
 import { SwipeCard } from '@/components/SwipeCard'
 import { MatchModal } from '@/components/MatchModal'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { logger } from '@/lib/logger'
 import '../globals.css'
 
 export default function SwipePage() {
@@ -21,6 +23,21 @@ export default function SwipePage() {
   useEffect(() => {
     loadUserAndProfiles()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleKeyPress = (event: KeyboardEvent) => {
+    if (currentIndex >= profiles.length) return
+    
+    if (event.key === 'ArrowLeft') {
+      handleSwipe('left')
+    } else if (event.key === 'ArrowRight') {
+      handleSwipe('right')
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
+  }, [currentIndex, profiles.length]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadUserAndProfiles = async () => {
     try {
@@ -66,7 +83,7 @@ export default function SwipePage() {
         setProfiles(availableProfiles)
       }
     } catch (error) {
-      console.error('Error loading profiles:', error)
+      logger.error('Error loading profiles:', error)
     } finally {
       setLoading(false)
     }
@@ -108,14 +125,14 @@ export default function SwipePage() {
 
       setCurrentIndex(currentIndex + 1)
     } catch (error) {
-      console.error('Error recording swipe:', error)
+      logger.error('Error recording swipe:', error)
     }
   }
 
   if (loading) {
     return (
       <div className="dark-container flex items-center justify-center">
-        <Sparkles className="h-8 w-8 animate-spin" style={{ color: 'hsl(var(--foreground))' }} />
+        <LoadingSpinner message="Loading profiles..." size="lg" />
       </div>
     )
   }
@@ -125,7 +142,10 @@ export default function SwipePage() {
   return (
     <main className="dark-container fade-in flex flex-col items-center justify-center">
       <div className="w-full max-w-md space-y-4">
-        <h1 className="text-2xl font-bold text-center">Find Your Match!</h1>
+        <h1 className="text-2xl font-bold text-center mb-2">Find Your Match!</h1>
+        <p className="text-sm text-center mb-4" style={{ color: 'hsl(var(--muted-foreground))' }}>
+          Swipe or use arrow keys (← →) to navigate
+        </p>
         
         {currentProfile ? (
           <>
@@ -147,15 +167,19 @@ export default function SwipePage() {
 
             <div className="flex justify-center gap-8">
               <button
-                className="dark-button dark-button-outline rounded-full h-16 w-16 p-0 flex items-center justify-center"
+                className="dark-button dark-button-outline rounded-full h-16 w-16 p-0 flex items-center justify-center focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                 onClick={() => handleSwipe('left')}
+                aria-label="Pass on this profile"
+                tabIndex={0}
               >
                 <X className="h-8 w-8" style={{ color: '#ef4444' }} />
               </button>
               
               <button
-                className="dark-button dark-button-outline rounded-full h-16 w-16 p-0 flex items-center justify-center"
+                className="dark-button dark-button-outline rounded-full h-16 w-16 p-0 flex items-center justify-center focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                 onClick={() => handleSwipe('right')}
+                aria-label="Like this profile"
+                tabIndex={0}
               >
                 <Heart className="h-8 w-8" fill="#10b981" style={{ color: '#10b981' }} />
               </button>
@@ -166,6 +190,9 @@ export default function SwipePage() {
             <h2 className="text-xl font-semibold">No more profiles!</h2>
             <p style={{ color: 'hsl(var(--muted-foreground))' }}>
               Check back later for more Network School members
+            </p>
+            <p className="text-sm" style={{ color: 'hsl(var(--muted-foreground))' }}>
+              Tip: Use arrow keys (← →) to swipe
             </p>
             <button onClick={() => router.push('/')} className="dark-button">
               Back to Home

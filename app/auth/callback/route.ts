@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { logger } from '@/lib/logger'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
@@ -8,8 +9,8 @@ export async function GET(request: NextRequest) {
   // Use the configured site URL or fallback to the request origin
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin
   
-  console.log('Auth callback - siteUrl:', siteUrl)
-  console.log('Auth callback - code:', code)
+  logger.debug('Auth callback - siteUrl:', siteUrl)
+  logger.debug('Auth callback - code:', code)
 
   if (code) {
     try {
@@ -45,7 +46,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.redirect(`${siteUrl}/swipe`)
       }
     } catch (error) {
-      console.error('Auth callback error:', error)
+      logger.error('Auth callback error:', error)
     }
   }
 

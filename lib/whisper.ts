@@ -1,3 +1,5 @@
+import { logger } from '@/lib/logger'
+
 // Whisper API integration
 const WHISPER_API_KEY = process.env.WHISPER_API!
 
@@ -100,7 +102,7 @@ export async function transcribeAudio(
     }
     
   } catch (error) {
-    console.error('Whisper API error:', error)
+    logger.error('Whisper API error:', error)
     return {
       error: 'transcription_failed',
       message: error instanceof Error ? error.message : 'Unknown error occurred'
@@ -132,7 +134,7 @@ export async function transcribeAudioFromURL(
     
     return await transcribeAudio(audioFile, options)
   } catch (error) {
-    console.error('Error transcribing audio from URL:', error)
+    logger.error('Error transcribing audio from URL:', error)
     return {
       error: 'fetch_failed',
       message: error instanceof Error ? error.message : 'Failed to fetch audio'
