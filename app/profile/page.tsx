@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { Camera } from 'lucide-react'
 import '../globals.css'
 
 const INTERESTS = [
@@ -11,26 +12,13 @@ const INTERESTS = [
   '🧠 Philosophy', '🍜 Foodie', '🃏 Game Nights'
 ]
 
-const WAYS_TO_CONNECT = [
-  '☕ Coffee Chat', '💻 Co-working', '🍽️ Grab a Meal', 
-  '🏃 Activities', '💡 Brainstorm', '🗣️ Deep Talks'
-]
-
 export default function ProfileSetup() {
   const router = useRouter()
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
   const [displayName, setDisplayName] = useState('')
-  const [selectedInterests, setSelectedInterests] = useState<string[]>([])
-  const [connectionStyle, setConnectionStyle] = useState('')
-
-  useEffect(() => {
-    // Get name from home page
-    const tempName = localStorage.getItem('temp_name')
-    if (tempName) {
-      setDisplayName(tempName)
-      localStorage.removeItem('temp_name')
-    }
-  }, [])
+  const [selectedInterest, setSelectedInterest] = useState('')
+  const [profileImage, setProfileImage] = useState<string | null>(null)
 
   const toggleInterest = (interest: string) => {
     if (selectedInterests.includes(interest)) {
