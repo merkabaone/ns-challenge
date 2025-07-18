@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import './globals.css'
 
@@ -40,25 +39,20 @@ export default function Home() {
           NS Friender
         </h1>
         
-        <Link 
-          href="/profile"
+        <button 
           onClick={handleBegin}
-          className="inline-block px-20 py-8 bg-white text-black rounded-full transition-all hover:scale-105 hover:shadow-2xl active:scale-95 cursor-pointer"
+          className="px-20 py-8 bg-white text-black rounded-full transition-all hover:scale-105 hover:shadow-2xl active:scale-95"
           style={{
             fontSize: '2.25rem',
             fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif',
             fontWeight: '700',
             letterSpacing: '0.05em',
             boxShadow: '0 12px 48px rgba(255, 255, 255, 0.3)',
-            minWidth: '320px',
-            cursor: 'pointer',
-            border: 'none',
-            outline: 'none',
-            textDecoration: 'none'
+            minWidth: '320px'
           }}
         >
           Begin
-        </Link>
+        </button>
       </div>
     </main>
   )
