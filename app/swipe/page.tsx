@@ -5,54 +5,17 @@ import { useRouter } from 'next/navigation'
 import { Heart, X, MessageCircle } from 'lucide-react'
 import '../globals.css'
 
-// Mock profiles for demo
-const DEMO_PROFILES = [
-  {
-    id: '1',
-    display_name: 'Sarah Chen',
-    discord_username: 'sarahchen#4521',
-    interests: ['🤖 AI & Tech', '🚀 Startups', '☕ Coffee Chat'],
-    connection_style: '💡 Brainstorm',
-    bio: 'Building AI tools for creators. Love deep conversations about tech and philosophy over coffee.',
-    avatar: '👩‍💻'
-  },
-  {
-    id: '2',
-    display_name: 'Marcus Rivera',
-    discord_username: 'marcusbeats#7823',
-    interests: ['🔥 The Burn', '🎵 Music & DJs', '🧠 Philosophy'],
-    connection_style: '🏃 Activities',
-    bio: 'DJ and music producer. Always down for adventures and philosophical discussions.',
-    avatar: '🎧'
-  },
-  {
-    id: '3',
-    display_name: 'Emily Zhang',
-    discord_username: 'emilyzhang#9012',
-    interests: ['💰 Crypto', '🍜 Foodie', '🚀 Startups'],
-    connection_style: '🍽️ Grab a Meal',
-    bio: 'Web3 founder exploring the intersection of food and blockchain. Let\'s grab the best ramen in town!',
-    avatar: '🍜'
-  },
-  {
-    id: '4',
-    display_name: 'Alex Thompson',
-    discord_username: 'alexbio#3456',
-    interests: ['🧬 Longevity', '🏃 Activities', '🤖 AI & Tech'],
-    connection_style: '💻 Co-working',
-    bio: 'Biohacker and fitness enthusiast. Building longevity tech and always up for a workout.',
-    avatar: '💪'
-  },
-  {
-    id: '5',
-    display_name: 'Priya Patel',
-    discord_username: 'priyafilms#2345',
-    interests: ['🎬 Filmmaking', '🧠 Philosophy', '☕ Coffee Chat'],
-    connection_style: '🗣️ Deep Talks',
-    bio: 'Documentary filmmaker exploring human stories. Love meaningful conversations.',
-    avatar: '🎬'
-  }
-]
+interface Profile {
+  id: string
+  display_name: string
+  discord_username: string
+  interests: string[]
+  connection_style: string
+  bio: string
+  avatar: string
+  age: number
+  location: string
+}
 
 export default function SwipePage() {
   const router = useRouter()
@@ -61,24 +24,51 @@ export default function SwipePage() {
   const [matches, setMatches] = useState<string[]>([])
   const [showMatch, setShowMatch] = useState(false)
   const [userProfile, setUserProfile] = useState<any>(null)
+  const [profiles, setProfiles] = useState<Profile[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Get user profile
-    const profile = localStorage.getItem('demo_profile')
-    if (!profile) {
-      router.push('/')
-      return
-    }
-    setUserProfile(JSON.parse(profile))
+    const loadData = async () => {
+      try {
+        // Load profiles from JSON file
+        const response = await fetch('/profiles.json')
+        const profilesData = await response.json()
+        setProfiles(profilesData)
 
-    // Load existing likes and matches
-    const savedLikes = localStorage.getItem('liked_profiles')
-    const savedMatches = localStorage.getItem('matches')
-    if (savedLikes) setLikedProfiles(JSON.parse(savedLikes))
-    if (savedMatches) setMatches(JSON.parse(savedMatches))
+        // Get user profile - create default if none exists
+        const profile = localStorage.getItem('demo_profile')
+        if (!profile) {
+          // Create a default profile so user can still use the app
+          const defaultProfile = {
+            id: `user_${Date.now()}`,
+            display_name: 'Demo User',
+            discord_username: `user${Date.now()}`,
+            interests: ['🤖 AI & Tech'],
+            connection_style: '☕ Coffee Chat',
+            created_at: new Date().toISOString()
+          }
+          localStorage.setItem('demo_profile', JSON.stringify(defaultProfile))
+          setUserProfile(defaultProfile)
+        } else {
+          setUserProfile(JSON.parse(profile))
+        }
+
+        // Load existing likes and matches
+        const savedLikes = localStorage.getItem('liked_profiles')
+        const savedMatches = localStorage.getItem('matches')
+        if (savedLikes) setLikedProfiles(JSON.parse(savedLikes))
+        if (savedMatches) setMatches(JSON.parse(savedMatches))
+      } catch (error) {
+        console.error('Error loading profiles:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadData()
   }, [router])
 
-  const currentProfile = DEMO_PROFILES[currentIndex]
+  const currentProfile = profiles[currentIndex]
 
   const handleSwipe = (isLike: boolean) => {
     if (!currentProfile) return
@@ -99,7 +89,7 @@ export default function SwipePage() {
     }
 
     // Move to next profile
-    if (currentIndex < DEMO_PROFILES.length - 1) {
+    if (currentIndex < profiles.length - 1) {
       setCurrentIndex(currentIndex + 1)
     }
   }
@@ -108,11 +98,22 @@ export default function SwipePage() {
     router.push('/matches')
   }
 
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-4xl mb-4">🔄</div>
+          <p className="text-xl">Loading profiles...</p>
+        </div>
+      </main>
+    )
+  }
+
   if (!userProfile || !currentProfile) {
     return null
   }
 
-  if (currentIndex >= DEMO_PROFILES.length) {
+  if (currentIndex >= profiles.length) {
     return (
       <main className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center px-6">
@@ -219,7 +220,7 @@ export default function SwipePage() {
       <div className="absolute bottom-6 left-6 right-6">
         <div className="text-center mb-4">
           <p className="text-sm opacity-60">
-            {currentIndex + 1} / {DEMO_PROFILES.length}
+            {currentIndex + 1} / {profiles.length}
           </p>
         </div>
         <div className="flex justify-center">

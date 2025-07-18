@@ -1,0 +1,90 @@
+[
+  {
+    "id": "profile_1",
+    "display_name": "Sarah Chen",
+    "discord_username": "sarahchen#4521",
+    "interests": ["🤖 AI & Tech", "🧬 Longevity", "🚀 Startups"],
+    "connection_style": "☕ Coffee Chat",
+    "bio": "AI researcher passionate about longevity and building the future",
+    "avatar": "👩‍💻",
+    "age": 28,
+    "location": "San Francisco"
+  },
+  {
+    "id": "profile_2", 
+    "display_name": "Marcus Rivera",
+    "discord_username": "marcusbeats#7823",
+    "interests": ["🎵 Music & DJs", "💰 Crypto", "🃏 Game Nights"],
+    "connection_style": "🎮 Gaming Sessions",
+    "bio": "DJ and crypto enthusiast. Love hosting game nights and making beats",
+    "avatar": "🎧",
+    "age": 25,
+    "location": "Austin"
+  },
+  {
+    "id": "profile_3",
+    "display_name": "Elena Kozlov",
+    "discord_username": "elenakoz#2456",
+    "interests": ["🎬 Filmmaking", "🧠 Philosophy", "🔥 The Burn"],
+    "connection_style": "🎭 Creative Projects",
+    "bio": "Filmmaker exploring the intersection of technology and human experience",
+    "avatar": "🎬",
+    "age": 30,
+    "location": "Berlin"
+  },
+  {
+    "id": "profile_4",
+    "display_name": "Alex Kim",
+    "discord_username": "alexkim#9876",
+    "interests": ["🤖 AI & Tech", "🍜 Foodie", "💰 Crypto"],
+    "connection_style": "🍽️ Dinner Meetups",
+    "bio": "Tech entrepreneur who loves trying new restaurants and discussing AI",
+    "avatar": "🍜",
+    "age": 32,
+    "location": "New York"
+  },
+  {
+    "id": "profile_5",
+    "display_name": "Maya Patel",
+    "discord_username": "mayap#3344",
+    "interests": ["🧬 Longevity", "🧠 Philosophy", "🚀 Startups"],
+    "connection_style": "🚶‍♀️ Walking Meetings",
+    "bio": "Longevity researcher fascinated by the philosophical implications of extended life",
+    "avatar": "🧬",
+    "age": 27,
+    "location": "Boston"
+  },
+  {
+    "id": "profile_6",
+    "display_name": "Jordan Blake",
+    "discord_username": "jordanb#5577",
+    "interests": ["🎵 Music & DJs", "🎬 Filmmaking", "🔥 The Burn"],
+    "connection_style": "🎨 Art & Culture",
+    "bio": "Music producer and filmmaker creating immersive audiovisual experiences",
+    "avatar": "🎨",
+    "age": 29,
+    "location": "Los Angeles"
+  },
+  {
+    "id": "profile_7",
+    "display_name": "Zara Ahmed",
+    "discord_username": "zaraa#1122",
+    "interests": ["💰 Crypto", "🚀 Startups", "🃏 Game Nights"],
+    "connection_style": "☕ Coffee Chat",
+    "bio": "Crypto investor and startup advisor. Love strategic board games",
+    "avatar": "💎",
+    "age": 26,
+    "location": "Miami"
+  },
+  {
+    "id": "profile_8",
+    "display_name": "Ryan Cooper",
+    "discord_username": "ryanc#6688",
+    "interests": ["🍜 Foodie", "🧠 Philosophy", "🎮 Gaming"],
+    "connection_style": "🍽️ Dinner Meetups",
+    "bio": "Chef and philosopher exploring the culture of food and gaming",
+    "avatar": "👨‍🍳",
+    "age": 31,
+    "location": "Portland"
+  }
+]

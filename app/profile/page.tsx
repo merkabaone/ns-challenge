@@ -35,7 +35,7 @@ export default function ProfileSetup() {
     const profile = {
       id: `user_${Date.now()}`,
       display_name: displayName || 'Demo User',
-      discord_username: discordUsername || 'demo_user_123',
+      discord_username: discordUsername || `user${Date.now()}`,
       interests: [selectedInterest || '🤖 AI & Tech'],
       connection_style: '☕ Coffee Chat',
       created_at: new Date().toISOString(),
@@ -44,25 +44,12 @@ export default function ProfileSetup() {
     
     localStorage.setItem('demo_profile', JSON.stringify(profile))
     
-    // Create demo matches
-    const demoMatches = [
-      {
-        id: 'match_1',
-        profile: {
-          display_name: 'Sarah Chen',
-          discord_username: 'sarahchen#4521'
-        }
-      },
-      {
-        id: 'match_2', 
-        profile: {
-          display_name: 'Marcus Rivera',
-          discord_username: 'marcusbeats#7823'
-        }
-      }
-    ]
+    // Create some initial matches (first 2 profiles from our JSON)
+    const initialMatches = ['profile_1', 'profile_2']
+    localStorage.setItem('matches', JSON.stringify(initialMatches))
     
-    localStorage.setItem('demo_matches', JSON.stringify(demoMatches))
+    // Clear any existing swipe progress
+    localStorage.removeItem('liked_profiles')
     
     // Go straight to swipe
     router.push('/swipe')

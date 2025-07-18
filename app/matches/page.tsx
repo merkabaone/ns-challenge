@@ -5,32 +5,43 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, Mail } from 'lucide-react'
 import '../globals.css'
 
-// Simple match data structure
-interface SimpleMatch {
+interface Profile {
   id: string
   display_name: string
   discord_username: string
+  interests: string[]
+  connection_style: string
+  bio: string
   avatar: string
+  age: number
+  location: string
 }
 
 export default function MatchesPage() {
   const router = useRouter()
-  const [matches, setMatches] = useState<SimpleMatch[]>([])
+  const [matches, setMatches] = useState<Profile[]>([])
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  const loadMatches = useCallback(() => {
-    // Load matches from profile setup
-    const savedMatches = localStorage.getItem('demo_matches')
-    if (savedMatches) {
-      const matchData = JSON.parse(savedMatches)
-      // Convert to simple format
-      const simpleMatches: SimpleMatch[] = matchData.map((m: any) => ({
-        id: m.id,
-        display_name: m.profile.display_name,
-        discord_username: m.profile.discord_username,
-        avatar: m.profile.display_name === 'Sarah Chen' ? '👩‍💻' : '🎧'
-      }))
-      setMatches(simpleMatches)
+  const loadMatches = useCallback(async () => {
+    try {
+      // Load all profiles
+      const response = await fetch('/profiles.json')
+      const allProfiles = await response.json()
+      
+      // Get matched profile IDs from localStorage
+      const matchedIds = JSON.parse(localStorage.getItem('matches') || '[]')
+      
+      // Filter profiles to only show matches
+      const matchedProfiles = allProfiles.filter((profile: Profile) => 
+        matchedIds.includes(profile.id)
+      )
+      
+      setMatches(matchedProfiles)
+    } catch (error) {
+      console.error('Error loading matches:', error)
+    } finally {
+      setLoading(false)
     }
   }, [])
 
@@ -46,6 +57,17 @@ export default function MatchesPage() {
 
   const goBack = () => {
     router.push('/swipe')
+  }
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-4xl mb-4">🔄</div>
+          <p className="text-xl">Loading matches...</p>
+        </div>
+      </main>
+    )
   }
 
   return (
