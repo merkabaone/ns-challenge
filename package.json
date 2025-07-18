@@ -8,9 +8,11 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "setup": "npx shadcn@latest init && npm run setup:supabase",
-    "setup:supabase": "echo 'Copy .env.local.example to .env.local and add your Supabase credentials'",
-    "db:generate-types": "npx supabase gen types typescript --project-id YOUR_PROJECT_ID --schema public > lib/supabase/types.ts",
+    "setup": "node scripts/quick-setup.js",
+    "setup:env": "node scripts/setup-env.js",
+    "setup:supabase": "node scripts/supabase-setup.js",
+    "setup:vercel": "node scripts/vercel-setup.js",
+    "db:generate-types": "supabase gen types typescript --linked > lib/supabase/types.ts",
     "deploy": "vercel --prod"
   },
   "dependencies": {

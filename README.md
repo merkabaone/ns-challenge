@@ -4,15 +4,28 @@ Competition-ready monorepo built with Next.js, Supabase, Tailwind CSS, and ShadC
 
 ## ⚡ Quick Start
 
+### 🚀 Automated Setup (Recommended)
+```bash
+# Clone and install
+git clone https://github.com/merkabaone/ns-challenge.git
+cd ns-challenge
+
+# One-command setup (installs deps, sets up env, initializes components)
+npm run setup
+
+# Start development
+npm run dev
+```
+
+### 🔧 Manual Setup
 ```bash
 # Clone and install
 git clone https://github.com/merkabaone/ns-challenge.git
 cd ns-challenge
 npm install
 
-# Setup environment
-cp .env.local.example .env.local
-# Add your Supabase credentials to .env.local
+# Setup environment (interactive CLI)
+npm run setup:env
 
 # Initialize ShadCN/UI
 npx shadcn@latest init
@@ -70,18 +83,43 @@ ns-challenge/
 
 ## 🔧 Available Scripts
 
+### 🚀 Setup & Development
 ```bash
+npm run setup        # Complete automated setup (recommended)
+npm run setup:env    # Interactive environment setup
+npm run setup:supabase # Supabase project setup
+npm run setup:vercel  # Vercel deployment setup
 npm run dev          # Start development server
+```
+
+### 🛠️ Build & Deploy
+```bash
 npm run build        # Build for production
 npm run start        # Start production server
+npm run deploy       # Deploy to Vercel
+```
+
+### 🔍 Quality & Types
+```bash
 npm run lint         # Run ESLint
 npm run type-check   # Run TypeScript check
-npm run setup        # Initialize ShadCN/UI
-npm run deploy       # Deploy to Vercel
+npm run db:generate-types # Generate Supabase types
 ```
 
 ## 🗄️ Database Setup
 
+### 🚀 Automated (Recommended)
+```bash
+npm run setup:supabase
+```
+This will:
+- Install Supabase CLI (if needed)
+- Login to your Supabase account
+- Create/link your project
+- Generate TypeScript types
+- Update environment variables
+
+### 🔧 Manual Setup
 1. Create a Supabase project at [supabase.com](https://supabase.com)
 2. Copy your project URL and anon key to `.env.local`
 3. Use the Supabase dashboard to create tables
@@ -102,7 +140,17 @@ npx shadcn@latest add form
 
 ## 🚀 Deployment
 
-### Vercel (Recommended)
+### 🚀 Automated Vercel Setup
+```bash
+npm run setup:vercel
+```
+This will:
+- Install Vercel CLI (if needed)
+- Login to your Vercel account
+- Deploy your project
+- Automatically set environment variables from `.env.local`
+
+### 🔧 Manual Vercel Setup
 ```bash
 # One-time setup
 npm install -g vercel
@@ -113,17 +161,23 @@ npm run deploy
 ```
 
 ### Environment Variables
-Set these in your Vercel dashboard:
+The automated setup will handle this, but if setting manually:
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
 ## 🎯 Competition Tips
 
-1. **Start with the basics**: Auth, database schema, core components
-2. **Use ShadCN/UI**: Pre-built, customizable components
-3. **Mobile-first**: Design for mobile, enhance for desktop
-4. **Type safety**: Use TypeScript for better development experience
-5. **Deploy early**: Use Vercel's preview deployments for feedback
+### ⚡ Speed Tips
+1. **Use automated setup**: `npm run setup` gets you running in 60 seconds
+2. **Deploy early**: `npm run setup:vercel` for instant deployment
+3. **Use ShadCN/UI**: Pre-built, customizable components
+4. **Mobile-first**: Design for mobile, enhance for desktop
+
+### 🛠️ Development Tips
+1. **Type safety**: Use TypeScript for better development experience
+2. **Database-first**: Design your schema early with Supabase
+3. **Component library**: Build reusable components in `components/custom/`
+4. **Environment setup**: Use different `.env.local` for development vs production
 
 ## 📚 Resources
 
