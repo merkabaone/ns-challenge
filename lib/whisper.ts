@@ -9,6 +9,12 @@ export interface TranscriptionResult {
     text: string
     start: number
     end: number
+    speaker?: string
+  }>
+  speakers?: Array<{
+    speaker: string
+    start: number
+    end: number
   }>
 }
 
@@ -22,8 +28,11 @@ export async function transcribeAudio(
   options: {
     language?: string
     model?: 'whisper-1' | 'whisper-large' | 'whisper-small'
-    response_format?: 'json' | 'text' | 'srt' | 'verbose_json'
+    response_format?: 'json' | 'text' | 'srt' | 'verbose_json' | 'vtt'
     temperature?: number
+    speaker_labels?: boolean
+    prompt?: string
+    translate?: boolean
   } = {}
 ): Promise<TranscriptionResult | WhisperError> {
   try {
@@ -42,8 +51,20 @@ export async function transcribeAudio(
     if (options.temperature !== undefined) {
       formData.append('temperature', options.temperature.toString())
     }
+    
+    if (options.speaker_labels) {
+      formData.append('speaker_labels', 'true')
+    }
+    
+    if (options.prompt) {
+      formData.append('prompt', options.prompt)
+    }
+    
+    if (options.translate) {
+      formData.append('translate', 'true')
+    }
 
-    const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+    const response = await fetch('https://api.lemonfox.ai/v1/audio/transcriptions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${WHISPER_API_KEY}`,
@@ -68,12 +89,14 @@ export async function transcribeAudio(
         text: result.text,
         language: result.language,
         segments: result.segments,
+        speakers: result.speakers,
       }
     }
     
     return {
       text: result.text,
       language: result.language,
+      speakers: result.speakers,
     }
     
   } catch (error) {
@@ -90,8 +113,11 @@ export async function transcribeAudioFromURL(
   options?: {
     language?: string
     model?: 'whisper-1' | 'whisper-large' | 'whisper-small'
-    response_format?: 'json' | 'text' | 'srt' | 'verbose_json'
+    response_format?: 'json' | 'text' | 'srt' | 'verbose_json' | 'vtt'
     temperature?: number
+    speaker_labels?: boolean
+    prompt?: string
+    translate?: boolean
   }
 ): Promise<TranscriptionResult | WhisperError> {
   try {
