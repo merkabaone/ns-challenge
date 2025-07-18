@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Database, Mic, TestTube, Zap } from 'lucide-react'
+import { Database, Mic, TestTube, Zap, Code } from 'lucide-react'
 
 export default function Home() {
   return (
@@ -16,7 +16,7 @@ export default function Home() {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -69,6 +69,33 @@ export default function Home() {
                   Open Supabase
                 </Link>
               </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Code className="h-5 w-5" />
+                Frontend Excellence
+              </CardTitle>
+              <CardDescription>
+                Complete development system for maximum efficiency
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <p className="text-sm font-medium">🎨 Design System Tokens</p>
+                <p className="text-sm font-medium">🧪 Component Testing</p>
+                <p className="text-sm font-medium">📊 Performance Monitoring</p>
+                <p className="text-sm font-medium">📚 Interactive Documentation</p>
+                <p className="text-sm font-medium">🔧 Development Tools</p>
+              </div>
+              <Link href="/dev">
+                <Button variant="outline" className="w-full">
+                  <Code className="h-4 w-4 mr-2" />
+                  Dev Dashboard
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         </div>
