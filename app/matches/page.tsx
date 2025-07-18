@@ -109,9 +109,18 @@ export default function MatchesPage() {
                 </h3>
                 
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4" style={{ color: 'hsl(var(--muted-foreground))' }} />
-                    <span>Prefers: {profile.connection_preference}</span>
+                  <div className="flex items-start gap-2">
+                    <MapPin className="h-4 w-4 mt-1" style={{ color: 'hsl(var(--muted-foreground))' }} />
+                    <div>
+                      <span className="font-medium">Prefers:</span>
+                      <div className="mt-1">
+                        {(profile.connection_preferences || []).map((pref, index) => (
+                          <span key={index} className="block text-sm">
+                            • {pref}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                   
                   <div className="flex items-center gap-2">
