@@ -113,7 +113,7 @@ export default function Home() {
           <CardContent>
             <div className="text-center space-y-4">
               <p className="text-sm text-muted-foreground">
-                Record or upload audio files to transcribe with OpenAI's Whisper API
+                Record or upload audio files to transcribe with OpenAI&apos;s Whisper API
               </p>
               <Link href="/test">
                 <Button size="lg">

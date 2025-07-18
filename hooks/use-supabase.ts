@@ -7,6 +7,12 @@ export function useSupabase() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Only proceed if supabase client is available
+    if (!supabase) {
+      setLoading(false)
+      return
+    }
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)

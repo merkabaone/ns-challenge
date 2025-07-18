@@ -1,13 +1,24 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Only create client if environment variables are available
+export const supabase = supabaseUrl && supabaseAnonKey 
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null
 
 // Database connection test
 export async function testConnection() {
   try {
+    if (!supabase) {
+      return { 
+        success: false, 
+        message: 'Database connection failed',
+        error: 'Supabase client not initialized - missing environment variables'
+      }
+    }
+
     const { data, error } = await supabase
       .from('_test')
       .select('*')
@@ -36,6 +47,13 @@ export async function testConnection() {
 // Example database operations
 export async function createUser(email: string, name: string) {
   try {
+    if (!supabase) {
+      return { 
+        success: false, 
+        error: 'Supabase client not initialized - missing environment variables'
+      }
+    }
+
     const { data, error } = await supabase
       .from('users')
       .insert([
@@ -56,6 +74,13 @@ export async function createUser(email: string, name: string) {
 
 export async function getUsers() {
   try {
+    if (!supabase) {
+      return { 
+        success: false, 
+        error: 'Supabase client not initialized - missing environment variables'
+      }
+    }
+
     const { data, error } = await supabase
       .from('users')
       .select('*')
