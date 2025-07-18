@@ -32,7 +32,6 @@ export default function Home() {
   return (
     <main className="fixed inset-0 flex items-center justify-center overflow-hidden fade-in" style={{ 
       backgroundColor: 'black',
-      height: '100vh',
       height: '100dvh', // Dynamic viewport height for mobile
       width: '100vw',
       touchAction: 'none' // Prevent scrolling on touch devices

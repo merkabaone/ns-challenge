@@ -166,29 +166,14 @@ export default function SwipePage() {
   const currentProfile = profiles[currentIndex]
 
   return (
-    <main className="dark-container fade-in">
-      <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="mb-6">Discover Connections</h1>
-          <p className="text-xl font-light opacity-60">
-            Swipe right to connect, left to pass
+    <main className="min-h-screen bg-black text-white fade-in p-6">
+      <div className="max-w-md mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl mb-2">Meet People</h1>
+          <p className="text-sm opacity-60">
+            Tap ❌ to pass, ✅ to connect
           </p>
         </div>
-
-        <div className="w-full max-w-md mx-auto space-y-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-sm opacity-60">← Pass</span>
-              <span className="text-sm opacity-60">|</span>
-              <span className="text-sm opacity-60">Connect →</span>
-            </div>
-            <button
-              onClick={() => router.push('/matches')}
-              className="dark-link text-sm uppercase tracking-wide"
-            >
-              View Matches
-            </button>
-          </div>
         
         {currentProfile ? (
           <>
@@ -208,23 +193,21 @@ export default function SwipePage() {
               </AnimatePresence>
             </div>
 
-            <div className="flex justify-center gap-8">
+            <div className="flex justify-center gap-12 mt-6">
               <button
-                className="dark-button dark-button-outline rounded-full h-16 w-16 p-0 flex items-center justify-center focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                className="text-6xl hover:scale-110 transition-transform"
                 onClick={() => handleSwipe('left')}
-                aria-label="Pass on this profile"
-                tabIndex={0}
+                aria-label="Pass"
               >
-                <X className="h-8 w-8" style={{ color: '#ef4444' }} />
+                ❌
               </button>
               
               <button
-                className="dark-button dark-button-outline rounded-full h-16 w-16 p-0 flex items-center justify-center focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                className="text-6xl hover:scale-110 transition-transform"
                 onClick={() => handleSwipe('right')}
-                aria-label="Like this profile"
-                tabIndex={0}
+                aria-label="Connect"
               >
-                <Heart className="h-8 w-8" fill="#10b981" style={{ color: '#10b981' }} />
+                ✅
               </button>
             </div>
           </>
