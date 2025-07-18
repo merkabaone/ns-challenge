@@ -6,114 +6,191 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Separator } from '@/components/ui/separator'
-import { Database, Mic, CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
-import { testConnection } from '@/lib/supabase/database'
-import AudioTranscription from '@/components/custom/audio-transcription'
+import { 
+  Database, 
+  Mic, 
+  CheckCircle, 
+  AlertCircle, 
+  Loader2, 
+  Globe, 
+  Key,
+  RefreshCw 
+} from 'lucide-react'
 
 interface TestResult {
   name: string
-  status: 'pending' | 'success' | 'error'
+  status: 'pending' | 'success' | 'error' | 'warning'
   message: string
+  details?: string
   duration?: number
 }
 
-export default function TestPage() {
+export default function SystemTestPage() {
+  const [loading, setLoading] = useState(false)
   const [tests, setTests] = useState<TestResult[]>([
-    { name: 'Supabase Connection', status: 'pending', message: 'Not tested yet' },
-    { name: 'Whisper API Key', status: 'pending', message: 'Not tested yet' },
-    { name: 'Environment Variables', status: 'pending', message: 'Not tested yet' },
+    { name: 'Client Environment', status: 'pending', message: 'Checking browser environment...' },
+    { name: 'Server Environment', status: 'pending', message: 'Checking server environment...' },
+    { name: 'Database Connection', status: 'pending', message: 'Testing database connection...' },
+    { name: 'API Configuration', status: 'pending', message: 'Verifying API keys...' },
   ])
 
-  const updateTest = (name: string, status: TestResult['status'], message: string, duration?: number) => {
+  const updateTest = (name: string, status: TestResult['status'], message: string, details?: string, duration?: number) => {
     setTests(prev => prev.map(test => 
-      test.name === name ? { ...test, status, message, duration } : test
+      test.name === name ? { ...test, status, message, details, duration } : test
     ))
   }
 
-  const runSupabaseTest = async () => {
-    updateTest('Supabase Connection', 'pending', 'Testing connection...')
+  const runClientTests = () => {
     const startTime = Date.now()
     
-    try {
-      const result = await testConnection()
-      const duration = Date.now() - startTime
+    // Check client-side environment variables
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    
+    if (supabaseUrl && supabaseKey) {
+      updateTest(
+        'Client Environment', 
+        'success', 
+        'All client environment variables found',
+        `Supabase URL: ${supabaseUrl.substring(0, 30)}...
+Supabase Key: ${supabaseKey.substring(0, 30)}...`,
+        Date.now() - startTime
+      )
+    } else {
+      const missing = []
+      if (!supabaseUrl) missing.push('NEXT_PUBLIC_SUPABASE_URL')
+      if (!supabaseKey) missing.push('NEXT_PUBLIC_SUPABASE_ANON_KEY')
       
-      if (result.success) {
-        updateTest('Supabase Connection', 'success', result.message, duration)
-      } else {
-        updateTest('Supabase Connection', 'error', result.error || 'Connection failed', duration)
-      }
-    } catch (error) {
-      const duration = Date.now() - startTime
-      updateTest('Supabase Connection', 'error', 'Connection test failed', duration)
+      updateTest(
+        'Client Environment', 
+        'error', 
+        `Missing client environment variables: ${missing.join(', ')}`,
+        'These variables should be available in the browser. Check your deployment configuration.',
+        Date.now() - startTime
+      )
     }
   }
 
-  const runWhisperTest = async () => {
-    updateTest('Whisper API Key', 'pending', 'Testing API key...')
+  const runServerTests = async () => {
     const startTime = Date.now()
     
     try {
-      const response = await fetch('/api/test-env')
-      const result = await response.json()
+      const response = await fetch('/api/system-test')
+      const data = await response.json()
       const duration = Date.now() - startTime
       
-      console.log('API Response:', result) // Debug log
+      // Server Environment Test
+      const env = data.tests.environment
+      const hasAllVars = env.supabaseUrl.present && env.supabaseKey.present && env.whisperKey.present
       
-      const whisperVar = result.variables?.find((v: any) => v.name === 'WHISPER_API')
-      
-      if (whisperVar?.present) {
-        updateTest('Whisper API Key', 'success', 'API key found in environment', duration)
-      } else if (whisperVar?.hasValue && whisperVar?.isPlaceholder) {
-        updateTest('Whisper API Key', 'error', `WHISPER_API contains placeholder value (${whisperVar.valuePreview})`, duration)
+      if (hasAllVars) {
+        updateTest(
+          'Server Environment', 
+          'success', 
+          'All server environment variables found',
+          `Supabase URL: ${env.supabaseUrl.value}
+Supabase Key: ${env.supabaseKey.value}
+Whisper Key: ${env.whisperKey.value}`,
+          duration
+        )
       } else {
-        updateTest('Whisper API Key', 'error', `WHISPER_API not found in environment variables (${whisperVar?.valuePreview || 'undefined'})`, duration)
+        const missing = []
+        if (!env.supabaseUrl.present) missing.push('NEXT_PUBLIC_SUPABASE_URL')
+        if (!env.supabaseKey.present) missing.push('NEXT_PUBLIC_SUPABASE_ANON_KEY')
+        if (!env.whisperKey.present) missing.push('WHISPER_API')
+        
+        updateTest(
+          'Server Environment', 
+          'error', 
+          `Missing server environment variables: ${missing.join(', ')}`,
+          'These variables are not available on the server. Check your deployment configuration.',
+          duration
+        )
       }
+      
+      // Database Connection Test
+      const db = data.tests.supabase
+      updateTest(
+        'Database Connection',
+        db.status === 'success' ? 'success' : 'error',
+        db.message,
+        db.status === 'error' ? 'Check your Supabase project settings and ensure the database is accessible.' : undefined,
+        duration
+      )
+      
+      // API Configuration Test
+      const api = data.tests.whisper
+      updateTest(
+        'API Configuration',
+        api.status === 'success' ? 'success' : 'error',
+        api.message,
+        api.status === 'error' ? 'Add your Whisper API key to the WHISPER_API environment variable.' : undefined,
+        duration
+      )
+      
     } catch (error) {
       const duration = Date.now() - startTime
-      updateTest('Whisper API Key', 'error', `Error checking API key: ${error}`, duration)
-    }
-  }
-
-  const runEnvTest = async () => {
-    updateTest('Environment Variables', 'pending', 'Checking environment...')
-    const startTime = Date.now()
-    
-    try {
-      const response = await fetch('/api/test-env')
-      const result = await response.json()
-      const duration = Date.now() - startTime
-      
-      if (result.success) {
-        updateTest('Environment Variables', 'success', result.message, duration)
-      } else {
-        updateTest('Environment Variables', 'error', result.message, duration)
-      }
-    } catch (error) {
-      const duration = Date.now() - startTime
-      updateTest('Environment Variables', 'error', 'Error checking environment variables', duration)
+      updateTest(
+        'Server Environment', 
+        'error', 
+        'Failed to contact server',
+        error instanceof Error ? error.message : 'Unknown error',
+        duration
+      )
+      updateTest(
+        'Database Connection', 
+        'error', 
+        'Cannot test - server unavailable',
+        undefined,
+        duration
+      )
+      updateTest(
+        'API Configuration', 
+        'error', 
+        'Cannot test - server unavailable',
+        undefined,
+        duration
+      )
     }
   }
 
   const runAllTests = async () => {
-    await runEnvTest()
-    await runSupabaseTest()
-    await runWhisperTest()
+    setLoading(true)
+    
+    // Reset all tests
+    setTests([
+      { name: 'Client Environment', status: 'pending', message: 'Checking browser environment...' },
+      { name: 'Server Environment', status: 'pending', message: 'Checking server environment...' },
+      { name: 'Database Connection', status: 'pending', message: 'Testing database connection...' },
+      { name: 'API Configuration', status: 'pending', message: 'Verifying API keys...' },
+    ])
+    
+    // Run client tests immediately
+    runClientTests()
+    
+    // Run server tests
+    await runServerTests()
+    
+    setLoading(false)
   }
 
+  // Run tests on component mount
   useEffect(() => {
-    // Run tests automatically on page load
     runAllTests()
   }, [])
 
   const getStatusIcon = (status: TestResult['status']) => {
     switch (status) {
       case 'pending':
-        return <Loader2 className="h-4 w-4 animate-spin" />
+        return <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
       case 'success':
         return <CheckCircle className="h-4 w-4 text-green-500" />
       case 'error':
         return <AlertCircle className="h-4 w-4 text-red-500" />
+      case 'warning':
+        return <AlertCircle className="h-4 w-4 text-yellow-500" />
+      default:
+        return <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
     }
   }
 
@@ -122,19 +199,39 @@ export default function TestPage() {
       case 'pending':
         return <Badge variant="secondary">Testing...</Badge>
       case 'success':
-        return <Badge variant="default" className="bg-green-500">✓ Passed</Badge>
+        return <Badge className="bg-green-500 hover:bg-green-600">✓ Passed</Badge>
       case 'error':
         return <Badge variant="destructive">✗ Failed</Badge>
+      case 'warning':
+        return <Badge className="bg-yellow-500 hover:bg-yellow-600">⚠ Warning</Badge>
+      default:
+        return <Badge variant="secondary">Testing...</Badge>
+    }
+  }
+
+  const getTestIcon = (name: string) => {
+    switch (name) {
+      case 'Client Environment':
+        return <Globe className="h-4 w-4" />
+      case 'Server Environment':
+        return <Database className="h-4 w-4" />
+      case 'Database Connection':
+        return <Database className="h-4 w-4" />
+      case 'API Configuration':
+        return <Key className="h-4 w-4" />
+      default:
+        return <CheckCircle className="h-4 w-4" />
     }
   }
 
   const allTestsPassed = tests.every(test => test.status === 'success')
   const hasFailedTests = tests.some(test => test.status === 'error')
+  const hasWarnings = tests.some(test => test.status === 'warning')
 
   return (
     <div className="container mx-auto p-4 space-y-6">
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold">NS Challenge - System Test</h1>
+        <h1 className="text-3xl font-bold">System Test Dashboard</h1>
         <p className="text-muted-foreground">
           Verify your Supabase and Whisper API integration
         </p>
@@ -145,51 +242,71 @@ export default function TestPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Database className="h-5 w-5" />
-            System Tests
+            System Health Check
           </CardTitle>
           <CardDescription>
-            Testing database connection and API integrations
+            Testing all system components and integrations
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {tests.map((test, index) => (
-            <div key={test.name} className="flex items-center justify-between p-3 border rounded-lg">
-              <div className="flex items-center gap-3">
-                {getStatusIcon(test.status)}
-                <div>
-                  <div className="font-medium">{test.name}</div>
-                  <div className="text-sm text-muted-foreground">{test.message}</div>
-                  {test.duration && (
-                    <div className="text-xs text-muted-foreground">
-                      Completed in {test.duration}ms
-                    </div>
-                  )}
+          {tests.map((test) => (
+            <div key={test.name} className="space-y-2">
+              <div className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="flex items-center gap-3">
+                  {getTestIcon(test.name)}
+                  {getStatusIcon(test.status)}
+                  <div className="flex-1">
+                    <div className="font-medium">{test.name}</div>
+                    <div className="text-sm text-muted-foreground">{test.message}</div>
+                    {test.duration && (
+                      <div className="text-xs text-muted-foreground">
+                        Completed in {test.duration}ms
+                      </div>
+                    )}
+                  </div>
                 </div>
+                {getStatusBadge(test.status)}
               </div>
-              {getStatusBadge(test.status)}
+              
+              {test.details && (
+                <div className="ml-8 p-3 bg-muted rounded-lg">
+                  <pre className="text-xs font-mono whitespace-pre-wrap">{test.details}</pre>
+                </div>
+              )}
             </div>
           ))}
           
           <Separator />
           
           <div className="flex items-center justify-between">
-            <Button onClick={runAllTests} variant="outline">
+            <Button 
+              onClick={runAllTests} 
+              disabled={loading}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
               Run All Tests
             </Button>
             <div className="text-sm text-muted-foreground">
               {allTestsPassed ? '✅ All systems operational' : 
-               hasFailedTests ? '❌ Some tests failed' : '🔄 Tests in progress'}
+               hasFailedTests ? '❌ Some tests failed' : 
+               hasWarnings ? '⚠️ Some warnings detected' : '🔄 Tests in progress'}
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Status Alert */}
+      {/* Status Alerts */}
       {allTestsPassed && (
-        <Alert>
-          <CheckCircle className="h-4 w-4" />
+        <Alert className="border-green-500">
+          <CheckCircle className="h-4 w-4 text-green-500" />
           <AlertDescription>
-            🎉 All tests passed! Your system is ready for competition development.
+            🎉 All tests passed! Your system is ready for development.
           </AlertDescription>
         </Alert>
       )}
@@ -198,22 +315,52 @@ export default function TestPage() {
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            Some tests failed. Please check your environment variables and database connection.
+            Some tests failed. Please check the details above and ensure your environment variables are configured correctly in your deployment platform.
           </AlertDescription>
         </Alert>
       )}
 
-      {/* Audio Transcription Demo */}
-      <div className="space-y-4">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold">Audio Transcription Demo</h2>
-          <p className="text-muted-foreground">
-            Test your Whisper API integration with live audio transcription
-          </p>
-        </div>
-        
-        <AudioTranscription />
-      </div>
+      {hasWarnings && !hasFailedTests && (
+        <Alert className="border-yellow-500">
+          <AlertCircle className="h-4 w-4 text-yellow-500" />
+          <AlertDescription>
+            Some tests have warnings. Your system should work, but check the details above for potential issues.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Environment Help */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Key className="h-5 w-5" />
+            Environment Variables Help
+          </CardTitle>
+          <CardDescription>
+            Required environment variables for your deployment
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <h4 className="font-medium">Required Variables:</h4>
+            <ul className="text-sm space-y-1 text-muted-foreground">
+              <li>• <code>NEXT_PUBLIC_SUPABASE_URL</code> - Your Supabase project URL</li>
+              <li>• <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> - Your Supabase anonymous key</li>
+              <li>• <code>WHISPER_API</code> - Your OpenAI Whisper API key</li>
+            </ul>
+          </div>
+          
+          <div className="space-y-2">
+            <h4 className="font-medium">How to set variables in Vercel:</h4>
+            <ol className="text-sm space-y-1 text-muted-foreground">
+              <li>1. Go to your Vercel project dashboard</li>
+              <li>2. Click Settings → Environment Variables</li>
+              <li>3. Add each variable for Production, Preview, and Development</li>
+              <li>4. Redeploy your project</li>
+            </ol>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

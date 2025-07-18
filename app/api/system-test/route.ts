@@ -1,0 +1,74 @@
+import { NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
+
+export async function GET() {
+  const results = {
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV,
+    tests: {}
+  }
+
+  // Test 1: Environment Variables
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  const whisperKey = process.env.WHISPER_API
+
+  results.tests.environment = {
+    supabaseUrl: {
+      present: !!supabaseUrl,
+      value: supabaseUrl ? `${supabaseUrl.substring(0, 20)}...` : 'missing'
+    },
+    supabaseKey: {
+      present: !!supabaseKey,
+      value: supabaseKey ? `${supabaseKey.substring(0, 20)}...` : 'missing'
+    },
+    whisperKey: {
+      present: !!whisperKey,
+      value: whisperKey ? `${whisperKey.substring(0, 10)}...` : 'missing'
+    }
+  }
+
+  // Test 2: Supabase Connection
+  try {
+    if (supabaseUrl && supabaseKey) {
+      const supabase = createClient(supabaseUrl, supabaseKey)
+      const { data, error } = await supabase.from('_health_check').select('*').limit(1)
+      
+      if (error && error.code === 'PGRST116') {
+        // Table doesn't exist, but connection is working
+        results.tests.supabase = {
+          status: 'success',
+          message: 'Database connection successful'
+        }
+      } else if (error) {
+        results.tests.supabase = {
+          status: 'error',
+          message: error.message
+        }
+      } else {
+        results.tests.supabase = {
+          status: 'success',
+          message: 'Database connection and query successful'
+        }
+      }
+    } else {
+      results.tests.supabase = {
+        status: 'error',
+        message: 'Missing Supabase environment variables'
+      }
+    }
+  } catch (error) {
+    results.tests.supabase = {
+      status: 'error',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    }
+  }
+
+  // Test 3: Whisper API (just check if key exists)
+  results.tests.whisper = {
+    status: whisperKey ? 'success' : 'error',
+    message: whisperKey ? 'Whisper API key found' : 'Whisper API key missing'
+  }
+
+  return NextResponse.json(results)
+}
