@@ -17,7 +17,7 @@ const testProfile = {
   interests: ['Coding', 'Gaming', 'Reading'],
   connection_preference: 'friends',
   availability: 'weekends',
-  voice_intro_url: null
+  voice_intro: null
 };
 
 const secondTestUserId = 'test-user-2-' + Date.now();
@@ -29,7 +29,7 @@ const secondTestProfile = {
   interests: ['Music', 'Sports', 'Travel'],
   connection_preference: 'collaborators',
   availability: 'evenings',
-  voice_intro_url: null
+  voice_intro: null
 };
 
 // Color codes for output
@@ -65,8 +65,19 @@ async function testDatabase() {
       .single();
 
     if (createError1) {
-      log(`❌ Failed to create first profile: ${createError1.message || createError1}`, 'red');
+      log(`❌ Failed to create first profile: ${createError1.message || JSON.stringify(createError1)}`, 'red');
       console.error('Full error:', createError1);
+      console.error('Profile data:', testProfile);
+      
+      // Let's try to see what tables exist
+      const { data: tables, error: tableError } = await supabase
+        .from('profiles')
+        .select('*')
+        .limit(1);
+      
+      if (tableError) {
+        console.error('Table query error:', tableError);
+      }
       return;
     }
     log('✅ First profile created successfully', 'green');
@@ -128,46 +139,44 @@ async function testDatabase() {
       log(`   Updated interests: ${updatedProfile.interests.join(', ')}`, 'magenta');
     }
 
-    // Test 4: Create swipes
-    log('\nTest 4: Creating swipe records...', 'yellow');
+    // Test 4: Create likes
+    log('\nTest 4: Creating like records...', 'yellow');
     
-    const swipeData = {
+    const likeData = {
       swiper_id: profile1.id,
-      swiped_id: profile2.id,
-      is_like: true
+      liked_id: profile2.id
     };
 
-    const { data: swipe, error: swipeError } = await supabase
-      .from('swipes')
-      .insert([swipeData])
+    const { data: like, error: likeError } = await supabase
+      .from('likes')
+      .insert([likeData])
       .select()
       .single();
 
-    if (swipeError) {
-      log(`❌ Failed to create swipe: ${swipeError.message}`, 'red');
+    if (likeError) {
+      log(`❌ Failed to create like: ${likeError.message}`, 'red');
       return;
     }
-    log('✅ Swipe created successfully', 'green');
-    log(`   Swipe ID: ${swipe.id}`, 'magenta');
+    log('✅ Like created successfully', 'green');
+    log(`   Like ID: ${like.id}`, 'magenta');
 
-    // Create reciprocal swipe for match
-    const reciprocalSwipe = {
+    // Create reciprocal like for match
+    const reciprocalLike = {
       swiper_id: profile2.id,
-      swiped_id: profile1.id,
-      is_like: true
+      liked_id: profile1.id
     };
 
-    const { data: swipe2, error: swipeError2 } = await supabase
-      .from('swipes')
-      .insert([reciprocalSwipe])
+    const { data: like2, error: likeError2 } = await supabase
+      .from('likes')
+      .insert([reciprocalLike])
       .select()
       .single();
 
-    if (swipeError2) {
-      log(`❌ Failed to create reciprocal swipe: ${swipeError2.message}`, 'red');
+    if (likeError2) {
+      log(`❌ Failed to create reciprocal like: ${likeError2.message}`, 'red');
       return;
     }
-    log('✅ Reciprocal swipe created successfully', 'green');
+    log('✅ Reciprocal like created successfully', 'green');
 
     // Test 5: Check for matches
     log('\nTest 5: Checking for matches...', 'yellow');
@@ -223,16 +232,16 @@ async function testDatabase() {
     // Test 8: Clean up test data
     log('\nTest 8: Cleaning up test data...', 'yellow');
     
-    // Delete swipes first (due to foreign key constraints)
+    // Delete likes first (due to foreign key constraints)
     await supabase
-      .from('swipes')
+      .from('likes')
       .delete()
-      .or(`swiper_id.eq.${profile1.id},swiped_id.eq.${profile1.id}`);
+      .or(`swiper_id.eq.${profile1.id},liked_id.eq.${profile1.id}`);
 
     await supabase
-      .from('swipes')
+      .from('likes')
       .delete()
-      .or(`swiper_id.eq.${profile2.id},swiped_id.eq.${profile2.id}`);
+      .or(`swiper_id.eq.${profile2.id},liked_id.eq.${profile2.id}`);
 
     // Delete matches if any
     if (matches && matches.length > 0) {

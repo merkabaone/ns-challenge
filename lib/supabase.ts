@@ -13,7 +13,7 @@ export type Profile = {
   discord_avatar_url?: string
   profile_picture_url?: string
   interests: string[]
-  connection_preference: string
+  connection_preferences: string[]
   availability: string
   voice_intro?: string
   created_at?: string

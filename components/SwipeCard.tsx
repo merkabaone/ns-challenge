@@ -82,7 +82,7 @@ export function SwipeCard({ profile, onSwipeLeft, onSwipeRight, sharedInterests 
           <div className="flex items-center gap-4 mb-4 text-sm">
             <div className="flex items-center gap-1">
               <MapPin className="h-4 w-4" />
-              {profile.connection_preference}
+              {profile.connection_preferences?.join(' • ') || 'Open to connect'}
             </div>
             <div className="flex items-center gap-1">
               <Clock className="h-4 w-4" />

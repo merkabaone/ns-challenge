@@ -10,16 +10,16 @@ import { logger } from '@/lib/logger'
 import '../globals.css'
 
 const INTERESTS = [
-  'AI & Machine Learning', 'Health & Wellness', 'Building Products', 'Music Production', 
-  'Exploring Cities', 'Fitness & Sports', 'Reading & Writing', 'Gaming & Esports', 
-  'Cooking & Nutrition', 'Art & Design', 'Travel & Adventure', 'Photography & Video',
-  'Blockchain & Web3', 'Sustainability', 'Meditation & Mindfulness', 'Public Speaking',
-  'Investing & Finance', 'Podcasting', 'Community Building', 'Personal Development',
-  'Robotics', 'Biohacking', 'Language Learning', 'Dancing'
+  'AI & LLMs', 'Crypto & Web3', 'Startups & VC', 'The Burn',
+  'Longevity & Bio-hacking', 'Filmmaking & Storytelling', 'Music & DJs',
+  'Philosophy & Big Ideas', 'Foodie Culture', 'Poker & Game Nights'
 ]
 
 const CONNECTION_PREFERENCES = [
-  'Workout (The Burn)', 'Grab a Meal', 'Co-work Session', 'Just Chat'
+  'Hit "The Burn" Together', 'A Co-working Session', 'Grab a Meal', 
+  'A Coffee Chat', 'Whiteboard an Idea', 'Play Football / Hoops',
+  'A Day Trip to Singapore', 'Practice a Pitch', 'Talk Philosophy & Ideas',
+  'A Spontaneous Adventure'
 ]
 
 const AVAILABILITY = [
@@ -33,7 +33,7 @@ export default function ProfileSetup() {
   const [profilePicture, setProfilePicture] = useState<string | null>(null)
   const [displayName, setDisplayName] = useState('')
   const [selectedInterests, setSelectedInterests] = useState<string[]>([])
-  const [connectionPreference, setConnectionPreference] = useState('')
+  const [connectionPreferences, setConnectionPreferences] = useState<string[]>([])
   const [availability, setAvailability] = useState('')
   const [voiceIntro, setVoiceIntro] = useState('')
   const [showCamera, setShowCamera] = useState(false)
@@ -90,13 +90,21 @@ export default function ProfileSetup() {
   const toggleInterest = (interest: string) => {
     if (selectedInterests.includes(interest)) {
       setSelectedInterests(selectedInterests.filter(i => i !== interest))
-    } else if (selectedInterests.length < 5) {
+    } else if (selectedInterests.length < 3) {
       setSelectedInterests([...selectedInterests, interest])
     }
   }
 
+  const toggleConnectionPreference = (preference: string) => {
+    if (connectionPreferences.includes(preference)) {
+      setConnectionPreferences(connectionPreferences.filter(p => p !== preference))
+    } else if (connectionPreferences.length < 3) {
+      setConnectionPreferences([...connectionPreferences, preference])
+    }
+  }
+
   const handleContinueToVoice = () => {
-    if (!displayName || selectedInterests.length === 0 || !connectionPreference || !availability) {
+    if (!displayName || selectedInterests.length === 0 || connectionPreferences.length === 0 || !availability) {
       alert('Please fill in all fields before continuing')
       return
     }
@@ -127,7 +135,7 @@ export default function ProfileSetup() {
         display_name: displayName,
         profile_picture_url: profilePicture,
         interests: selectedInterests,
-        connection_preference: connectionPreference,
+        connection_preferences: connectionPreferences,
         availability: availability,
         voice_intro: voiceIntro,
         created_at: new Date().toISOString(),
@@ -293,13 +301,13 @@ export default function ProfileSetup() {
 
           {/* Interests */}
           <div className="dark-card">
-            <h2 className="text-lg font-semibold mb-4">My Interests (Select up to 5)</h2>
+            <h2 className="text-lg font-semibold mb-4">My Interests (Select 3)</h2>
             <div className="flex flex-wrap gap-2">
               {INTERESTS.map(interest => (
                 <button
                   key={interest}
                   onClick={() => toggleInterest(interest)}
-                  disabled={!selectedInterests.includes(interest) && selectedInterests.length >= 5}
+                  disabled={!selectedInterests.includes(interest) && selectedInterests.length >= 3}
                   className={`dark-badge ${selectedInterests.includes(interest) ? 'selected' : ''}`}
                 >
                   {interest}
@@ -310,13 +318,14 @@ export default function ProfileSetup() {
 
           {/* Connection Preference */}
           <div className="dark-card">
-            <h2 className="text-lg font-semibold mb-4">How I Like to Connect</h2>
+            <h2 className="text-lg font-semibold mb-4">How I Like to Connect (Select 3)</h2>
             <div className="flex flex-wrap gap-2">
               {CONNECTION_PREFERENCES.map(pref => (
                 <button
                   key={pref}
-                  onClick={() => setConnectionPreference(pref)}
-                  className={`dark-badge ${connectionPreference === pref ? 'selected' : ''}`}
+                  onClick={() => toggleConnectionPreference(pref)}
+                  disabled={!connectionPreferences.includes(pref) && connectionPreferences.length >= 3}
+                  className={`dark-badge ${connectionPreferences.includes(pref) ? 'selected' : ''}`}
                 >
                   {pref}
                 </button>
@@ -343,7 +352,7 @@ export default function ProfileSetup() {
           {/* Continue Button */}
           <button 
             onClick={handleContinueToVoice} 
-            disabled={loading || !displayName || selectedInterests.length === 0 || !connectionPreference || !availability}
+            disabled={loading || !displayName || selectedInterests.length === 0 || connectionPreferences.length === 0 || !availability}
             className="dark-button w-full"
           >
             Continue to Voice Introduction

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Heart, MessageCircle, Clock, MapPin, Sparkles, ArrowLeft } from 'lucide-react'
+import { Heart, MessageCircle, Clock, MapPin, Sparkles, ArrowLeft, Users, Settings } from 'lucide-react'
 import { type Profile } from '@/lib/supabase'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { logger } from '@/lib/logger'
@@ -177,14 +177,8 @@ export default function MatchesPage() {
     <main className="dark-container fade-in min-h-screen">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="mb-8">
           <h1 className="text-3xl font-bold">Your Matches</h1>
-          <button
-            onClick={() => router.push('/swipe')}
-            className="dark-button dark-button-outline"
-          >
-            Back to Swiping
-          </button>
         </div>
 
         {matches.length === 0 ? (
@@ -244,6 +238,26 @@ export default function MatchesPage() {
                 </div>
               </button>
             ))}
+          </div>
+        )}
+
+        {/* Bottom Navigation */}
+        <div className="fixed bottom-0 left-0 right-0 p-4" style={{ backgroundColor: 'hsl(var(--background))' }}>
+          <div className="max-w-4xl mx-auto grid grid-cols-2 gap-4">
+            <button
+              onClick={() => router.push('/swipe')}
+              className="dark-button flex items-center justify-center gap-2 py-4"
+            >
+              <Users className="h-5 w-5" />
+              Find More Matches
+            </button>
+            <button
+              onClick={() => router.push('/settings')}
+              className="dark-button dark-button-outline flex items-center justify-center gap-2 py-4"
+            >
+              <Settings className="h-5 w-5" />
+              Update Profile
+            </button>
           </div>
         )}
       </div>
