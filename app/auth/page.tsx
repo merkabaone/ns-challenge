@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -19,15 +19,18 @@ import {
 } from 'lucide-react'
 import { useAuth } from '@/lib/auth/auth-context'
 
-export default function AuthPage() {
+function AuthContent() {
   const { signInWithProvider, user } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [loading, setLoading] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
+  const redirectTo = searchParams.get('redirectTo') || '/dashboard'
+
   // Redirect if already authenticated
   if (user) {
-    router.push('/dashboard')
+    router.push(redirectTo as any)
     return null
   }
 
@@ -35,7 +38,7 @@ export default function AuthPage() {
     try {
       setLoading(provider)
       setError(null)
-      await signInWithProvider(provider)
+      await signInWithProvider(provider, redirectTo)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Authentication failed')
     } finally {
@@ -160,5 +163,21 @@ export default function AuthPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-center">Loading...</CardTitle>
+          </CardHeader>
+        </Card>
+      </div>
+    }>
+      <AuthContent />
+    </Suspense>
   )
 }

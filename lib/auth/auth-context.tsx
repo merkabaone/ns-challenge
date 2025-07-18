@@ -8,7 +8,7 @@ interface AuthContextType {
   user: User | null
   session: Session | null
   loading: boolean
-  signInWithProvider: (provider: 'google' | 'github' | 'discord') => Promise<void>
+  signInWithProvider: (provider: 'google' | 'github' | 'discord', redirectTo?: string) => Promise<void>
   signOut: () => Promise<void>
   updateProfile: (data: {
     username?: string
@@ -52,15 +52,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe()
   }, [])
 
-  const signInWithProvider = async (provider: 'google' | 'github' | 'discord') => {
+  const signInWithProvider = async (provider: 'google' | 'github' | 'discord', redirectTo?: string) => {
     if (!supabase) {
       throw new Error('Supabase client not initialized')
+    }
+
+    const callbackUrl = new URL(`${window.location.origin}/auth/callback`)
+    if (redirectTo) {
+      callbackUrl.searchParams.set('next', redirectTo)
     }
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: callbackUrl.toString(),
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
