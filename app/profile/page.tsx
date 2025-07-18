@@ -19,7 +19,8 @@ const WAYS_TO_CONNECT = [
 export default function ProfileSetup() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const [displayName, setDisplayName] = useState('Demo User')
+  const [displayName, setDisplayName] = useState('')
+  const [discordHandle, setDiscordHandle] = useState('')
   const [selectedInterests, setSelectedInterests] = useState<string[]>([])
   const [connectionStyle, setConnectionStyle] = useState('')
 
@@ -32,7 +33,7 @@ export default function ProfileSetup() {
   }
 
   const handleFinish = async () => {
-    if (selectedInterests.length === 0 || !connectionStyle) {
+    if (!displayName || !discordHandle || selectedInterests.length === 0 || !connectionStyle) {
       return
     }
 
@@ -46,9 +47,9 @@ export default function ProfileSetup() {
       interests: selectedInterests,
       connection_style: connectionStyle,
       created_at: new Date().toISOString(),
-      // Mock fields for demo
+      // Use provided Discord handle
       discord_id: `demo_${mockUserId}`,
-      discord_username: `${displayName.toLowerCase().replace(/\s+/g, '')}_${Math.floor(Math.random() * 1000)}`,
+      discord_username: discordHandle,
       discord_avatar_url: undefined,
       profile_picture_url: undefined,
       connection_preferences: [connectionStyle],

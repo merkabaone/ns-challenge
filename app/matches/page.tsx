@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, Mail } from 'lucide-react'
 import '../globals.css'
@@ -18,7 +18,7 @@ export default function MatchesPage() {
   const [matches, setMatches] = useState<SimpleMatch[]>([])
   const [copiedId, setCopiedId] = useState<string | null>(null)
 
-  useEffect(() => {
+  const loadMatches = useCallback(() => {
     // Load matches from profile setup
     const savedMatches = localStorage.getItem('demo_matches')
     if (savedMatches) {
@@ -33,6 +33,10 @@ export default function MatchesPage() {
       setMatches(simpleMatches)
     }
   }, [])
+
+  useEffect(() => {
+    loadMatches()
+  }, [loadMatches])
 
   const handleCopyDiscord = (username: string, matchId: string) => {
     navigator.clipboard.writeText(username)
