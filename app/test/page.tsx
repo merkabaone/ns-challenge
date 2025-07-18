@@ -58,18 +58,20 @@ export default function TestPage() {
       const result = await response.json()
       const duration = Date.now() - startTime
       
+      console.log('API Response:', result) // Debug log
+      
       const whisperVar = result.variables?.find((v: any) => v.name === 'WHISPER_API')
       
       if (whisperVar?.present) {
         updateTest('Whisper API Key', 'success', 'API key found in environment', duration)
       } else if (whisperVar?.hasValue && whisperVar?.isPlaceholder) {
-        updateTest('Whisper API Key', 'error', 'WHISPER_API contains placeholder value', duration)
+        updateTest('Whisper API Key', 'error', `WHISPER_API contains placeholder value (${whisperVar.valuePreview})`, duration)
       } else {
-        updateTest('Whisper API Key', 'error', 'WHISPER_API not found in environment variables', duration)
+        updateTest('Whisper API Key', 'error', `WHISPER_API not found in environment variables (${whisperVar?.valuePreview || 'undefined'})`, duration)
       }
     } catch (error) {
       const duration = Date.now() - startTime
-      updateTest('Whisper API Key', 'error', 'Error checking API key', duration)
+      updateTest('Whisper API Key', 'error', `Error checking API key: ${error}`, duration)
     }
   }
 
