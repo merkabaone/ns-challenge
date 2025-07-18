@@ -54,11 +54,54 @@ export default function ProfileSetup() {
       display_name: displayName,
       interests: selectedInterests,
       connection_style: connectionStyle,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
+      // Mock fields for demo
+      discord_id: `demo_${mockUserId}`,
+      discord_username: `${displayName.toLowerCase().replace(/\s+/g, '')}_${Math.floor(Math.random() * 1000)}`,
+      discord_avatar_url: undefined,
+      profile_picture_url: undefined,
+      connection_preferences: [connectionStyle],
+      availability: 'Afternoons',
+      voice_intro: `Hi! I'm ${displayName}. I'm interested in ${selectedInterests.join(', ')}. I love connecting through ${connectionStyle}. Looking forward to meeting fellow Network School members!`,
+      updated_at: new Date().toISOString()
     }
     
     localStorage.setItem('demo_profile', JSON.stringify(profile))
     localStorage.setItem('demo_user_id', mockUserId)
+    
+    // Create some demo matches for a better demo experience
+    const demoMatches = [
+      {
+        id: 'match_1',
+        profile: {
+          id: 'demo_sarah',
+          display_name: 'Sarah Chen',
+          discord_username: 'sarah_chen_789',
+          interests: ['🤖 AI & Tech', '🚀 Startups', '☕ Coffee Chat'],
+          connection_style: '💡 Brainstorm',
+          voice_intro: 'Hey! I\'m Sarah, building AI tools for creators. Love deep conversations about tech and philosophy over coffee.',
+          connection_preferences: ['💡 Brainstorm', '☕ Coffee Chat'],
+          availability: 'Mornings'
+        },
+        matchedAt: new Date().toISOString()
+      },
+      {
+        id: 'match_2',
+        profile: {
+          id: 'demo_marcus',
+          display_name: 'Marcus Rivera',
+          discord_username: 'marcus_dj_456',
+          interests: ['🔥 The Burn', '🎵 Music & DJs', '🧠 Philosophy'],
+          connection_style: '🏃 Activities',
+          voice_intro: 'What\'s up! I\'m Marcus, a DJ and music producer. Always down for adventures and philosophical discussions.',
+          connection_preferences: ['🏃 Activities', '🗣️ Deep Talks'],
+          availability: 'Evenings'
+        },
+        matchedAt: new Date().toISOString()
+      }
+    ]
+    
+    localStorage.setItem('demo_matches', JSON.stringify(demoMatches))
     
     // Go to swipe
     setTimeout(() => {

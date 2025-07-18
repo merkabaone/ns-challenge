@@ -2,17 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Heart, MessageCircle, Clock, MapPin, Sparkles, ArrowLeft, Users, Settings } from 'lucide-react'
-import { type Profile } from '@/lib/supabase'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { logger } from '@/lib/logger'
+import { ArrowLeft, Mail } from 'lucide-react'
 import '../globals.css'
-
-interface Match {
-  id: string
-  profile: Profile
-  matchedAt: string
-}
 
 export default function MatchesPage() {
   const router = useRouter()

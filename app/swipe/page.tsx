@@ -6,235 +6,218 @@ import { Heart, X, MessageCircle } from 'lucide-react'
 import '../globals.css'
 
 // Mock profiles for demo
-const MOCK_PROFILES = [
+const DEMO_PROFILES = [
   {
     id: '1',
-    discord_id: 'demo_1',
-    discord_username: 'alex_builder#1234',
-    discord_avatar_url: undefined,
-    display_name: 'Alex Builder',
-    profile_picture_url: undefined,
-    interests: ['AI & LLMs', 'Startups & VC', 'Philosophy & Big Ideas'],
-    connection_preferences: ['A Co-working Session', 'Whiteboard an Idea', 'Practice a Pitch'],
-    availability: 'Mornings',
-    voice_intro: "Hey! I'm Alex, a product builder focused on AI tools. Currently working on a startup that helps creators automate their workflows. Would love to connect with other builders and exchange ideas over morning co-working sessions!",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    display_name: 'Sarah Chen',
+    interests: ['🤖 AI & Tech', '🚀 Startups', '☕ Coffee Chat'],
+    connection_style: '💡 Brainstorm',
+    bio: 'Building AI tools for creators. Love deep conversations about tech and philosophy over coffee.',
+    avatar: '👩‍💻'
   },
   {
     id: '2',
-    discord_id: 'demo_2',
-    discord_username: 'maya_wellness#5678',
-    discord_avatar_url: undefined,
-    display_name: 'Maya',
-    profile_picture_url: undefined,
-    interests: ['The Burn', 'Longevity & Bio-hacking', 'Foodie Culture'],
-    connection_preferences: ['Hit "The Burn" Together', 'Grab a Meal', 'Talk Philosophy & Ideas'],
-    availability: 'Mornings',
-    voice_intro: "Hi there! I'm Maya, passionate about holistic wellness and building mindful communities. I run a small wellness coaching business and love starting my day with a good workout. Looking to connect with like-minded people who value health and personal growth!",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    display_name: 'Marcus Rivera',
+    interests: ['🔥 The Burn', '🎵 Music & DJs', '🧠 Philosophy'],
+    connection_style: '🏃 Activities',
+    bio: 'DJ and music producer. Always down for adventures and philosophical discussions.',
+    avatar: '🎧'
   },
   {
     id: '3',
-    discord_id: 'demo_3',
-    discord_username: 'sam_nomad#9012',
-    discord_avatar_url: undefined,
-    display_name: 'Sam Nomad',
-    profile_picture_url: undefined,
-    interests: ['Filmmaking & Storytelling', 'Music & DJs', 'Foodie Culture'],
-    connection_preferences: ['A Spontaneous Adventure', 'A Day Trip to Singapore', 'Grab a Meal'],
-    availability: 'Afternoons',
-    voice_intro: "What's up! I'm Sam, a digital nomad and content creator. I've been traveling for 3 years now, documenting my journey and learning languages along the way. Always down to explore new restaurants and share travel stories!",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    display_name: 'Emily Zhang',
+    interests: ['💰 Crypto', '🍜 Foodie', '🚀 Startups'],
+    connection_style: '🍽️ Grab a Meal',
+    bio: 'Web3 founder exploring the intersection of food and blockchain. Let\'s grab the best ramen in town!',
+    avatar: '🍜'
   },
   {
     id: '4',
-    discord_id: 'demo_4',
-    discord_username: 'jordan_crypto#3456',
-    discord_avatar_url: undefined,
-    display_name: 'Jordan',
-    profile_picture_url: undefined,
-    interests: ['Crypto & Web3', 'Poker & Game Nights', 'Philosophy & Big Ideas'],
-    connection_preferences: ['A Coffee Chat', 'Play Football / Hoops', 'Talk Philosophy & Ideas'],
-    availability: 'Evenings',
-    voice_intro: "Hey everyone! I'm Jordan, deep into the Web3 space and building DeFi protocols. Also a huge gaming enthusiast and digital art collector. Love having deep conversations about the future of finance and technology. Hit me up for evening chats!",
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    display_name: 'Alex Thompson',
+    interests: ['🧬 Longevity', '🏃 Activities', '🤖 AI & Tech'],
+    connection_style: '💻 Co-working',
+    bio: 'Biohacker and fitness enthusiast. Building longevity tech and always up for a workout.',
+    avatar: '💪'
+  },
+  {
+    id: '5',
+    display_name: 'Priya Patel',
+    interests: ['🎬 Filmmaking', '🧠 Philosophy', '☕ Coffee Chat'],
+    connection_style: '🗣️ Deep Talks',
+    bio: 'Documentary filmmaker exploring human stories. Love meaningful conversations.',
+    avatar: '🎬'
   }
 ]
 
 export default function SwipePage() {
   const router = useRouter()
-  const [currentUser, setCurrentUser] = useState<Profile | null>(null)
-  const [profiles, setProfiles] = useState<Profile[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [loading, setLoading] = useState(true)
+  const [likedProfiles, setLikedProfiles] = useState<string[]>([])
+  const [matches, setMatches] = useState<string[]>([])
   const [showMatch, setShowMatch] = useState(false)
-  const [matchedProfile, setMatchedProfile] = useState<Profile | null>(null)
-  const [swipedProfiles, setSwipedProfiles] = useState<string[]>([])
+  const [userProfile, setUserProfile] = useState<any>(null)
 
   useEffect(() => {
-    loadUserAndProfiles()
-  }, [])
-
-  const handleKeyPress = (event: KeyboardEvent) => {
-    if (currentIndex >= profiles.length) return
-    
-    if (event.key === 'ArrowLeft') {
-      handleSwipe('left')
-    } else if (event.key === 'ArrowRight') {
-      handleSwipe('right')
+    // Get user profile
+    const profile = localStorage.getItem('demo_profile')
+    if (!profile) {
+      router.push('/')
+      return
     }
-  }
+    setUserProfile(JSON.parse(profile))
 
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyPress)
-    return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [currentIndex, profiles.length])
+    // Load existing likes and matches
+    const savedLikes = localStorage.getItem('liked_profiles')
+    const savedMatches = localStorage.getItem('matches')
+    if (savedLikes) setLikedProfiles(JSON.parse(savedLikes))
+    if (savedMatches) setMatches(JSON.parse(savedMatches))
+  }, [router])
 
-  const loadUserAndProfiles = async () => {
-    try {
-      // Load demo profile from localStorage
-      const savedProfile = localStorage.getItem('demo_profile')
-      if (!savedProfile) {
-        router.push('/profile')
-        return
+  const currentProfile = DEMO_PROFILES[currentIndex]
+
+  const handleSwipe = (isLike: boolean) => {
+    if (!currentProfile) return
+
+    if (isLike) {
+      const newLikes = [...likedProfiles, currentProfile.id]
+      setLikedProfiles(newLikes)
+      localStorage.setItem('liked_profiles', JSON.stringify(newLikes))
+
+      // Simulate random match (30% chance)
+      if (Math.random() < 0.3) {
+        const newMatches = [...matches, currentProfile.id]
+        setMatches(newMatches)
+        localStorage.setItem('matches', JSON.stringify(newMatches))
+        setShowMatch(true)
+        setTimeout(() => setShowMatch(false), 3000)
       }
-
-      const userProfile = JSON.parse(savedProfile)
-      setCurrentUser(userProfile)
-
-      // Get swiped profiles from localStorage
-      const swiped = JSON.parse(localStorage.getItem('swiped_profiles') || '[]')
-      setSwipedProfiles(swiped)
-
-      // Filter out already swiped profiles
-      const availableProfiles = MOCK_PROFILES.filter(p => !swiped.includes(p.id))
-      setProfiles(availableProfiles)
-    } catch (error) {
-      logger.error('Error loading profiles:', error)
-      router.push('/profile')
-    } finally {
-      setLoading(false)
     }
-  }
 
-  const handleSwipe = async (direction: 'left' | 'right') => {
-    if (!currentUser || currentIndex >= profiles.length) return
-
-    const targetProfile = profiles[currentIndex]
-    const isLike = direction === 'right'
-
-    try {
-      // Update swiped profiles in localStorage
-      const newSwipedProfiles = [...swipedProfiles, targetProfile.id]
-      setSwipedProfiles(newSwipedProfiles)
-      localStorage.setItem('swiped_profiles', JSON.stringify(newSwipedProfiles))
-
-      if (isLike) {
-        // For demo, randomly decide if it's a match (30% chance)
-        const isMatch = Math.random() < 0.3
-        
-        if (isMatch) {
-          setMatchedProfile(targetProfile)
-          setShowMatch(true)
-        }
-      }
-
+    // Move to next profile
+    if (currentIndex < DEMO_PROFILES.length - 1) {
       setCurrentIndex(currentIndex + 1)
-    } catch (error) {
-      logger.error('Error recording swipe:', error)
     }
   }
 
-  if (loading) {
+  const goToMatches = () => {
+    router.push('/matches')
+  }
+
+  if (!userProfile || !currentProfile) {
+    return null
+  }
+
+  if (currentIndex >= DEMO_PROFILES.length) {
     return (
-      <div className="dark-container flex items-center justify-center min-h-screen">
-        <LoadingSpinner message="Loading profiles..." size="lg" />
-      </div>
+      <main className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center px-6">
+          <h1 className="text-4xl mb-6">All caught up! 🎉</h1>
+          <p className="text-xl opacity-80 mb-8">
+            You&apos;ve seen all available profiles
+          </p>
+          <button
+            onClick={goToMatches}
+            className="px-8 py-3 bg-white text-black rounded-full hover:scale-105 transition-all"
+          >
+            View Your Matches ({matches.length})
+          </button>
+        </div>
+      </main>
     )
   }
 
-  const currentProfile = profiles[currentIndex]
-
   return (
-    <main className="min-h-screen bg-black text-white fade-in p-6">
-      <div className="max-w-md mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl mb-2">Meet People</h1>
-          <p className="text-sm opacity-60">
-            Tap ❌ to pass, ✅ to connect
-          </p>
-        </div>
-        
-        {currentProfile ? (
-          <>
-            <div className="relative h-[600px]">
-              <AnimatePresence>
-                <SwipeCard
-                  key={currentProfile.id}
-                  profile={currentProfile}
-                  onSwipeLeft={() => handleSwipe('left')}
-                  onSwipeRight={() => handleSwipe('right')}
-                  sharedInterests={
-                    currentUser?.interests.filter(i => 
-                      currentProfile.interests.includes(i)
-                    ) || []
-                  }
-                />
-              </AnimatePresence>
-            </div>
+    <main className="min-h-screen bg-black text-white relative overflow-hidden">
+      {/* Header */}
+      <div className="absolute top-0 left-0 right-0 z-10 p-6 flex justify-between items-center">
+        <h2 className="text-2xl font-light">NS Friender</h2>
+        <button
+          onClick={goToMatches}
+          className="flex items-center gap-2 px-4 py-2 border border-white/30 rounded-full hover:bg-white hover:text-black transition-all"
+        >
+          <MessageCircle size={20} />
+          <span>{matches.length}</span>
+        </button>
+      </div>
 
-            <div className="flex justify-center gap-12 mt-6">
-              <button
-                className="text-6xl hover:scale-110 transition-transform"
-                onClick={() => handleSwipe('left')}
-                aria-label="Pass"
-              >
-                ❌
-              </button>
-              
-              <button
-                className="text-6xl hover:scale-110 transition-transform"
-                onClick={() => handleSwipe('right')}
-                aria-label="Connect"
-              >
-                ✅
-              </button>
-            </div>
-          </>
-        ) : (
-          <div className="text-center space-y-4 py-12">
-            <h2 className="text-xl font-semibold">No more profiles!</h2>
-            <p style={{ color: 'hsl(var(--muted-foreground))' }}>
-              Check back later for more Network School members
+      {/* Profile Card */}
+      <div className="flex items-center justify-center min-h-screen p-6">
+        <div className="w-full max-w-md">
+          <div className="bg-white/5 backdrop-blur border border-white/20 rounded-3xl p-8 text-center">
+            {/* Avatar */}
+            <div className="text-8xl mb-6">{currentProfile.avatar}</div>
+            
+            {/* Name */}
+            <h2 className="text-3xl mb-4">{currentProfile.display_name}</h2>
+            
+            {/* Bio */}
+            <p className="text-lg opacity-80 mb-6 leading-relaxed">
+              {currentProfile.bio}
             </p>
-            <button 
-              onClick={() => {
-                // Reset swiped profiles for demo
-                localStorage.removeItem('swiped_profiles')
-                window.location.reload()
-              }} 
-              className="dark-button"
+            
+            {/* Interests */}
+            <div className="flex flex-wrap gap-2 justify-center mb-6">
+              {currentProfile.interests.map((interest, i) => (
+                <span key={i} className="px-4 py-2 bg-white/10 rounded-full text-sm">
+                  {interest}
+                </span>
+              ))}
+            </div>
+            
+            {/* Connection Style */}
+            <div className="mb-8">
+              <span className="text-lg opacity-60">Prefers to: </span>
+              <span className="text-lg">{currentProfile.connection_style}</span>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-center gap-8 mt-8">
+            <button
+              onClick={() => handleSwipe(false)}
+              className="w-16 h-16 rounded-full bg-white/10 hover:bg-red-500/20 flex items-center justify-center transition-all hover:scale-110"
             >
-              Start Over
+              <X size={28} className="text-red-400" />
+            </button>
+            
+            <button
+              onClick={() => handleSwipe(true)}
+              className="w-16 h-16 rounded-full bg-white/10 hover:bg-green-500/20 flex items-center justify-center transition-all hover:scale-110"
+            >
+              <Heart size={28} className="text-green-400" />
             </button>
           </div>
-        )}
         </div>
       </div>
 
-      {showMatch && matchedProfile && (
-        <MatchModal
-          matchedProfile={matchedProfile}
-          onClose={() => {
-            setShowMatch(false)
-            setMatchedProfile(null)
-          }}
-        />
+      {/* Match Notification */}
+      {showMatch && (
+        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 fade-in">
+          <div className="text-center">
+            <h1 className="text-6xl mb-6">It&apos;s a Match! 🎉</h1>
+            <p className="text-2xl opacity-80">
+              You and {currentProfile.display_name} liked each other!
+            </p>
+          </div>
+        </div>
       )}
+
+      {/* Progress and Navigation */}
+      <div className="absolute bottom-6 left-6 right-6">
+        <div className="text-center mb-4">
+          <p className="text-sm opacity-60">
+            {currentIndex + 1} / {DEMO_PROFILES.length}
+          </p>
+        </div>
+        <div className="flex justify-center">
+          <button
+            onClick={goToMatches}
+            className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-full transition-all text-sm"
+          >
+            View Matches ({matches.length})
+          </button>
+        </div>
+      </div>
     </main>
   )
 }
