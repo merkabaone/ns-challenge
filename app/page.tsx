@@ -6,36 +6,43 @@ import './globals.css'
 
 export default function Home() {
   const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [name, setName] = useState('')
 
   useEffect(() => {
     // Check if user has a profile
     const savedProfile = localStorage.getItem('demo_profile')
     if (savedProfile) {
-      // User is logged in, redirect to matches
-      router.push('/matches')
+      // User is logged in, redirect to swipe
+      router.push('/swipe')
     }
   }, [router])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleGetStarted = (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!email || !password) {
-      alert('Please fill in all fields')
+    if (!name.trim()) {
       return
     }
     
-    // For demo, just save email and redirect
-    localStorage.setItem('demo_email', email)
+    // Save name and go to quick profile setup
+    localStorage.setItem('temp_name', name)
     router.push('/profile')
   }
 
   return (
-    <main className="fixed inset-0 flex items-center justify-center overflow-hidden fade-in" style={{ backgroundColor: 'black' }}>
-      <div className="w-full max-w-sm px-6">
-        <h1 className="text-center mb-12" style={{ 
-          fontSize: 'clamp(3rem, 8vw, 5rem)', 
+    <main className="fixed inset-0 flex items-center justify-center overflow-hidden fade-in" style={{ 
+      backgroundColor: 'black',
+      height: '100vh',
+      height: '100dvh', // Dynamic viewport height for mobile
+      width: '100vw',
+      touchAction: 'none' // Prevent scrolling on touch devices
+    }}>
+      <div className="w-full max-w-md px-6 text-center" style={{ 
+        maxHeight: '90vh',
+        overflow: 'hidden'
+      }}>
+        <h1 className="mb-4" style={{ 
+          fontSize: 'clamp(3.5rem, 9vw, 6rem)', 
           lineHeight: '0.9',
           fontFamily: 'Georgia, "Times New Roman", serif',
           fontWeight: '400',
@@ -44,60 +51,53 @@ export default function Home() {
           NS Friender
         </h1>
         
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
-              className="w-full px-6 py-4 bg-transparent border border-white rounded-full text-white placeholder-gray-400 focus:outline-none focus:border-white"
-              style={{
-                fontSize: '1rem',
-                fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif',
-                fontWeight: '400',
-                letterSpacing: '0.02em'
-              }}
-            />
-          </div>
-          
-          <div>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              className="w-full px-6 py-4 bg-transparent border border-white rounded-full text-white placeholder-gray-400 focus:outline-none focus:border-white"
-              style={{
-                fontSize: '1rem',
-                fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif',
-                fontWeight: '400',
-                letterSpacing: '0.02em'
-              }}
-            />
-          </div>
+        <p className="text-xl mb-12 opacity-80" style={{
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif',
+          fontWeight: '300',
+          letterSpacing: '0.02em'
+        }}>
+          Connect with Network School members instantly
+        </p>
+        
+        <form onSubmit={handleGetStarted} className="space-y-6">
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="What's your name?"
+            className="w-full px-6 py-4 bg-transparent border border-white/30 rounded-full text-white placeholder-gray-500 focus:outline-none focus:border-white transition-all text-center"
+            style={{
+              fontSize: '1.125rem',
+              fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif',
+              fontWeight: '400',
+              letterSpacing: '0.02em'
+            }}
+            autoFocus
+          />
           
           <button 
             type="submit"
-            className="w-full py-4 bg-white text-black rounded-full transition-all hover:scale-105"
+            disabled={!name.trim()}
+            className={`w-full py-4 rounded-full transition-all ${
+              name.trim() 
+                ? 'bg-white text-black hover:scale-105 cursor-pointer' 
+                : 'bg-white/20 text-white/50 cursor-not-allowed'
+            }`}
             style={{
-              fontSize: '1rem',
+              fontSize: '1.125rem',
               fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif',
               fontWeight: '600',
               letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              boxShadow: '0 4px 20px rgba(255, 255, 255, 0.1)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 6px 30px rgba(255, 255, 255, 0.2)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 4px 20px rgba(255, 255, 255, 0.1)'
+              boxShadow: name.trim() ? '0 4px 20px rgba(255, 255, 255, 0.1)' : 'none'
             }}
           >
-            Sign Up
+            Get Started →
           </button>
         </form>
+        
+        <p className="mt-8 text-sm opacity-60">
+          Join 100+ Network School members already connecting
+        </p>
       </div>
     </main>
   )

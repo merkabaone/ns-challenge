@@ -48,10 +48,14 @@ body {
   font-weight: 400;
   line-height: 1.6;
   min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height */
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow: hidden; /* Prevent body scrolling */
+  position: fixed; /* Fix body position */
+  width: 100%;
 }
 
 /* Typography */
