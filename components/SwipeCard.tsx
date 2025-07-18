@@ -1,10 +1,9 @@
 'use client'
 
 import { motion, useMotionValue, useTransform } from 'framer-motion'
-import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { MapPin, Clock, Sparkles } from 'lucide-react'
 import { type Profile } from '@/lib/supabase'
+import '../app/globals.css'
 
 interface SwipeCardProps {
   profile: Profile
@@ -38,9 +37,9 @@ export function SwipeCard({ profile, onSwipeLeft, onSwipeRight, sharedInterests 
       exit={{ scale: 0.8, opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <Card className="relative overflow-hidden h-[600px]">
+      <div className="dark-card relative overflow-hidden h-[600px] p-0">
         {/* Background image or color */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/70" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80 z-10" />
         
         {/* Profile image */}
         {profile.profile_picture_url || profile.discord_avatar_url ? (
@@ -50,26 +49,34 @@ export function SwipeCard({ profile, onSwipeLeft, onSwipeRight, sharedInterests 
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-purple-400 to-pink-400" />
+          <div className="w-full h-full" style={{ background: 'linear-gradient(135deg, hsl(var(--secondary)) 0%, hsl(var(--muted)) 100%)' }} />
         )}
 
         {/* Swipe indicators */}
         <motion.div
-          className="absolute top-4 left-4 bg-red-500 text-white px-4 py-2 rounded-full font-bold"
-          style={{ opacity: useTransform(x, [-100, 0], [1, 0]) }}
+          className="absolute top-4 left-4 px-4 py-2 rounded-full font-bold z-20"
+          style={{ 
+            opacity: useTransform(x, [-100, 0], [1, 0]),
+            backgroundColor: '#ef4444',
+            color: 'white'
+          }}
         >
           PASS
         </motion.div>
         
         <motion.div
-          className="absolute top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-full font-bold"
-          style={{ opacity: useTransform(x, [0, 100], [0, 1]) }}
+          className="absolute top-4 right-4 px-4 py-2 rounded-full font-bold z-20"
+          style={{ 
+            opacity: useTransform(x, [0, 100], [0, 1]),
+            backgroundColor: '#10b981',
+            color: 'white'
+          }}
         >
           LIKE
         </motion.div>
 
         {/* Profile info */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+        <div className="absolute bottom-0 left-0 right-0 p-6 text-white z-20">
           <h3 className="text-3xl font-bold mb-2">{profile.display_name}</h3>
           
           <div className="flex items-center gap-4 mb-4 text-sm">
@@ -85,7 +92,7 @@ export function SwipeCard({ profile, onSwipeLeft, onSwipeRight, sharedInterests 
 
           {/* Voice Introduction */}
           {profile.voice_intro && (
-            <div className="mb-4 p-3 bg-black/50 rounded-lg">
+            <div className="mb-4 p-3 rounded-lg" style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
               <p className="text-sm italic line-clamp-3">&ldquo;{profile.voice_intro}&rdquo;</p>
             </div>
           )}
@@ -93,20 +100,23 @@ export function SwipeCard({ profile, onSwipeLeft, onSwipeRight, sharedInterests 
           {/* Interests */}
           <div className="flex flex-wrap gap-2">
             {profile.interests.map(interest => (
-              <Badge 
+              <span 
                 key={interest}
-                variant={sharedInterests.includes(interest) ? 'default' : 'secondary'}
-                className={sharedInterests.includes(interest) ? 'bg-pink-500' : ''}
+                className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
+                  sharedInterests.includes(interest) 
+                    ? 'bg-white text-black' 
+                    : 'bg-white/20 text-white backdrop-blur-sm'
+                }`}
               >
                 {sharedInterests.includes(interest) && (
-                  <Sparkles className="h-3 w-3 mr-1" />
+                  <Sparkles className="inline h-3 w-3 mr-1" />
                 )}
                 {interest}
-              </Badge>
+              </span>
             ))}
           </div>
         </div>
-      </Card>
+      </div>
     </motion.div>
   )
 }

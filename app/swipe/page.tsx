@@ -3,11 +3,11 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Button } from '@/components/ui/button'
-import { Heart, X, Sparkles, MapPin, Clock } from 'lucide-react'
+import { Heart, X, Sparkles } from 'lucide-react'
 import { supabase, type Profile } from '@/lib/supabase'
 import { SwipeCard } from '@/components/SwipeCard'
 import { MatchModal } from '@/components/MatchModal'
+import '../globals.css'
 
 export default function SwipePage() {
   const router = useRouter()
@@ -114,8 +114,8 @@ export default function SwipePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Sparkles className="h-8 w-8 animate-spin text-pink-500" />
+      <div className="dark-container flex items-center justify-center">
+        <Sparkles className="h-8 w-8 animate-spin" style={{ color: 'hsl(var(--foreground))' }} />
       </div>
     )
   }
@@ -123,7 +123,7 @@ export default function SwipePage() {
   const currentProfile = profiles[currentIndex]
 
   return (
-    <main className="min-h-screen p-4 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 flex flex-col items-center justify-center">
+    <main className="dark-container fade-in flex flex-col items-center justify-center">
       <div className="w-full max-w-md space-y-4">
         <h1 className="text-2xl font-bold text-center">Find Your Match!</h1>
         
@@ -146,34 +146,30 @@ export default function SwipePage() {
             </div>
 
             <div className="flex justify-center gap-8">
-              <Button
-                size="lg"
-                variant="outline"
-                className="rounded-full h-16 w-16 p-0"
+              <button
+                className="dark-button dark-button-outline rounded-full h-16 w-16 p-0 flex items-center justify-center"
                 onClick={() => handleSwipe('left')}
               >
-                <X className="h-8 w-8 text-red-500" />
-              </Button>
+                <X className="h-8 w-8" style={{ color: '#ef4444' }} />
+              </button>
               
-              <Button
-                size="lg"
-                variant="outline"
-                className="rounded-full h-16 w-16 p-0"
+              <button
+                className="dark-button dark-button-outline rounded-full h-16 w-16 p-0 flex items-center justify-center"
                 onClick={() => handleSwipe('right')}
               >
-                <Heart className="h-8 w-8 text-green-500" fill="currentColor" />
-              </Button>
+                <Heart className="h-8 w-8" fill="#10b981" style={{ color: '#10b981' }} />
+              </button>
             </div>
           </>
         ) : (
           <div className="text-center space-y-4 py-12">
             <h2 className="text-xl font-semibold">No more profiles!</h2>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p style={{ color: 'hsl(var(--muted-foreground))' }}>
               Check back later for more Network School members
             </p>
-            <Button onClick={() => router.push('/')}>
+            <button onClick={() => router.push('/')} className="dark-button">
               Back to Home
-            </Button>
+            </button>
           </div>
         )}
       </div>

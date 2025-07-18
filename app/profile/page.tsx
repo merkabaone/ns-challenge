@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Camera, X, Mic, Square } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { VoiceIntro } from '@/components/VoiceIntro'
-import '../styles/network-school.css'
+import '../globals.css'
 
 const INTERESTS = [
   'AI & Machine Learning', 'Health & Wellness', 'Building Products', 'Music Production', 
@@ -145,17 +145,17 @@ export default function ProfileSetup() {
 
   if (showVoiceIntro) {
     return (
-      <main className="ns-container">
-        <div className="max-w-2xl mx-auto ns-fade-in">
-          <h1 className="ns-heading text-center">Introduce Yourself</h1>
+      <main className="dark-container fade-in">
+        <div className="max-w-2xl mx-auto">
+          <h1 className="text-center mb-8">Introduce Yourself</h1>
           
-          <div className="ns-section">
-            <div className="ns-body text-center mb-8">
+          <div className="space-y-6">
+            <div className="text-center mb-8">
               <p className="text-lg mb-4">
                 Tell us about yourself! Share what brings you to Network School, 
                 what you&apos;re working on, and what kind of connections you&apos;re looking for.
               </p>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm" style={{ color: 'hsl(var(--muted-foreground))' }}>
                 Tip: Keep it under 60 seconds for the best experience
               </p>
             </div>
@@ -163,32 +163,34 @@ export default function ProfileSetup() {
             <VoiceIntro onTranscriptionComplete={handleTranscription} />
 
             {voiceIntro && (
-              <div className="mt-6 p-4 bg-gray-800 rounded-lg">
+              <div className="dark-card">
                 <h3 className="font-semibold mb-2">Your Introduction:</h3>
-                <p className="text-gray-300 italic">&ldquo;{voiceIntro}&rdquo;</p>
+                <p className="italic" style={{ color: 'hsl(var(--muted-foreground))' }}>
+                  &ldquo;{voiceIntro}&rdquo;
+                </p>
                 <button 
                   onClick={() => setVoiceIntro('')}
-                  className="ns-link mt-2 text-sm"
+                  className="dark-link mt-2 text-sm"
                 >
                   Re-record
                 </button>
               </div>
             )}
 
-            <div className="flex gap-4 mt-8">
+            <div className="flex gap-4">
               <button 
                 onClick={() => {
                   setShowVoiceIntro(false)
                   setVoiceIntro('')
                 }}
-                className="flex-1 border border-gray-600 text-white py-4 rounded font-semibold hover:border-white transition-colors"
+                className="dark-button dark-button-outline flex-1"
               >
                 Back
               </button>
               <button 
                 onClick={handleSubmit} 
                 disabled={loading || !voiceIntro}
-                className="flex-1 bg-white text-black py-4 rounded font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+                className="dark-button flex-1"
               >
                 {loading ? 'Saving...' : 'Start Swiping!'}
               </button>
@@ -200,43 +202,52 @@ export default function ProfileSetup() {
   }
 
   return (
-    <main className="ns-container">
-      <div className="max-w-2xl mx-auto ns-fade-in">
-        <h1 className="ns-heading text-center">Complete Your Profile</h1>
+    <main className="dark-container fade-in">
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-center mb-8">Complete Your Profile</h1>
         
         <div className="space-y-6">
           {/* Profile Picture */}
-          <div className="ns-section">
-            <h2 className="ns-body text-lg font-semibold mb-4">Profile Picture</h2>
+          <div className="dark-card">
+            <h2 className="text-lg font-semibold mb-4">Profile Picture</h2>
             <div className="flex flex-col items-center space-y-4">
               {profilePicture ? (
                 <div className="relative">
-                  <img src={profilePicture} alt="Profile" className="w-32 h-32 rounded-full object-cover border-2 border-white" />
+                  <img 
+                    src={profilePicture} 
+                    alt="Profile" 
+                    className="w-32 h-32 rounded-full object-cover" 
+                    style={{ border: '2px solid hsl(var(--border))' }}
+                  />
                   <button
-                    className="absolute -top-2 -right-2 bg-white text-black rounded-full p-1 hover:opacity-80 transition-opacity"
+                    className="absolute -top-2 -right-2 rounded-full p-1.5 transition-opacity hover:opacity-80"
+                    style={{ 
+                      backgroundColor: 'hsl(var(--primary))', 
+                      color: 'hsl(var(--primary-foreground))'
+                    }}
                     onClick={() => setProfilePicture(null)}
                   >
                     <X className="h-4 w-4" />
                   </button>
                 </div>
               ) : (
-                <div className="w-32 h-32 bg-gray-800 rounded-full flex items-center justify-center border-2 border-gray-600">
-                  <Camera className="h-12 w-12 text-gray-400" />
+                <div 
+                  className="w-32 h-32 rounded-full flex items-center justify-center"
+                  style={{ 
+                    backgroundColor: 'hsl(var(--secondary))', 
+                    border: '2px solid hsl(var(--border))' 
+                  }}
+                >
+                  <Camera className="h-12 w-12" style={{ color: 'hsl(var(--muted-foreground))' }} />
                 </div>
               )}
               
               {!showCamera && (
                 <div className="flex gap-4">
-                  <button 
-                    onClick={startCamera} 
-                    className="ns-link"
-                  >
+                  <button onClick={startCamera} className="dark-link">
                     Take Photo
                   </button>
-                  <button 
-                    onClick={() => fileInputRef.current?.click()} 
-                    className="ns-link"
-                  >
+                  <button onClick={() => fileInputRef.current?.click()} className="dark-link">
                     Upload Photo
                   </button>
                   <input
@@ -255,39 +266,35 @@ export default function ProfileSetup() {
                 <video ref={videoRef} autoPlay className="w-full rounded-lg" />
                 <canvas ref={canvasRef} className="hidden" />
                 <div className="flex gap-4 justify-center">
-                  <button onClick={capturePhoto} className="ns-link">Capture</button>
-                  <button onClick={stopCamera} className="ns-link">Cancel</button>
+                  <button onClick={capturePhoto} className="dark-link">Capture</button>
+                  <button onClick={stopCamera} className="dark-link">Cancel</button>
                 </div>
               </div>
             )}
           </div>
 
           {/* Display Name */}
-          <div className="ns-section">
-            <h2 className="ns-body text-lg font-semibold mb-4">Display Name</h2>
+          <div className="dark-card">
+            <h2 className="text-lg font-semibold mb-4">Display Name</h2>
             <input
               id="displayName"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="How should we call you?"
-              className="w-full bg-gray-800 text-white border border-gray-600 rounded px-4 py-2 focus:outline-none focus:border-white transition-colors"
+              className="dark-input"
             />
           </div>
 
           {/* Interests */}
-          <div className="ns-section">
-            <h2 className="ns-body text-lg font-semibold mb-4">My Interests (Select up to 5)</h2>
+          <div className="dark-card">
+            <h2 className="text-lg font-semibold mb-4">My Interests (Select up to 5)</h2>
             <div className="flex flex-wrap gap-2">
               {INTERESTS.map(interest => (
                 <button
                   key={interest}
                   onClick={() => toggleInterest(interest)}
                   disabled={!selectedInterests.includes(interest) && selectedInterests.length >= 5}
-                  className={`px-4 py-2 rounded transition-all ${
-                    selectedInterests.includes(interest) 
-                      ? 'bg-white text-black' 
-                      : 'bg-transparent text-white border border-gray-600 hover:border-white disabled:opacity-50 disabled:hover:border-gray-600'
-                  }`}
+                  className={`dark-badge ${selectedInterests.includes(interest) ? 'selected' : ''}`}
                 >
                   {interest}
                 </button>
@@ -296,18 +303,14 @@ export default function ProfileSetup() {
           </div>
 
           {/* Connection Preference */}
-          <div className="ns-section">
-            <h2 className="ns-body text-lg font-semibold mb-4">How I Like to Connect</h2>
+          <div className="dark-card">
+            <h2 className="text-lg font-semibold mb-4">How I Like to Connect</h2>
             <div className="flex flex-wrap gap-2">
               {CONNECTION_PREFERENCES.map(pref => (
                 <button
                   key={pref}
                   onClick={() => setConnectionPreference(pref)}
-                  className={`px-4 py-2 rounded transition-all ${
-                    connectionPreference === pref 
-                      ? 'bg-white text-black' 
-                      : 'bg-transparent text-white border border-gray-600 hover:border-white'
-                  }`}
+                  className={`dark-badge ${connectionPreference === pref ? 'selected' : ''}`}
                 >
                   {pref}
                 </button>
@@ -316,18 +319,14 @@ export default function ProfileSetup() {
           </div>
 
           {/* Availability */}
-          <div className="ns-section">
-            <h2 className="ns-body text-lg font-semibold mb-4">When I&apos;m Free</h2>
+          <div className="dark-card">
+            <h2 className="text-lg font-semibold mb-4">When I&apos;m Free</h2>
             <div className="flex flex-wrap gap-2">
               {AVAILABILITY.map(time => (
                 <button
                   key={time}
                   onClick={() => setAvailability(time)}
-                  className={`px-4 py-2 rounded transition-all ${
-                    availability === time 
-                      ? 'bg-white text-black' 
-                      : 'bg-transparent text-white border border-gray-600 hover:border-white'
-                  }`}
+                  className={`dark-badge ${availability === time ? 'selected' : ''}`}
                 >
                   {time}
                 </button>
@@ -339,7 +338,7 @@ export default function ProfileSetup() {
           <button 
             onClick={handleContinueToVoice} 
             disabled={loading || !displayName || selectedInterests.length === 0 || !connectionPreference || !availability}
-            className="w-full bg-white text-black py-4 rounded font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="dark-button w-full"
           >
             Continue to Voice Introduction
           </button>
