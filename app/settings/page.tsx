@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Camera, X, ArrowLeft, Save, LogOut } from 'lucide-react'
 import { VoiceIntro } from '@/components/VoiceIntro'
@@ -43,11 +43,7 @@ export default function SettingsPage() {
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  useEffect(() => {
-    loadProfile()
-  }, [])
-
-  const loadProfile = async () => {
+  const loadProfile = useCallback(async () => {
     try {
       const savedProfile = localStorage.getItem('demo_profile')
       if (!savedProfile) {
@@ -69,7 +65,11 @@ export default function SettingsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [router])
+
+  useEffect(() => {
+    loadProfile()
+  }, [loadProfile])
 
   const startCamera = async () => {
     try {

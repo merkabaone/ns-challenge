@@ -7,14 +7,7 @@ import './globals.css'
 export default function Home() {
   const router = useRouter()
 
-  useEffect(() => {
-    // Check if user has a profile
-    const savedProfile = localStorage.getItem('demo_profile')
-    if (savedProfile) {
-      // User is logged in, redirect to matches
-      router.push('/matches')
-    }
-  }, [router])
+  // Remove auth check - just start fresh each time
 
   const handleBegin = () => {
     // Clear any existing demo profile to start fresh
