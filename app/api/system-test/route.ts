@@ -11,7 +11,7 @@ export async function GET() {
   // Test 1: Environment Variables
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  const whisperKey = process.env.WHISPER_API
+  const speechApiKey = process.env.ASSEMBLY_AI_KEY || process.env.WHISPER_API
 
   results.tests.environment = {
     supabaseUrl: {
@@ -22,9 +22,9 @@ export async function GET() {
       present: !!supabaseKey,
       value: supabaseKey ? `${supabaseKey.substring(0, 20)}...` : 'missing'
     },
-    whisperKey: {
-      present: !!whisperKey,
-      value: whisperKey ? `${whisperKey.substring(0, 10)}...` : 'missing'
+    speechApiKey: {
+      present: !!speechApiKey,
+      value: speechApiKey ? `${speechApiKey.substring(0, 10)}...` : 'missing'
     }
   }
 
@@ -60,10 +60,10 @@ export async function GET() {
     }
   }
 
-  // Test 3: Whisper API (just check if key exists)
-  results.tests.whisper = {
-    status: whisperKey ? 'success' : 'error',
-    message: whisperKey ? 'Whisper API key found' : 'Whisper API key missing'
+  // Test 3: Speech API (just check if key exists)
+  results.tests.speechApi = {
+    status: speechApiKey ? 'success' : 'error',
+    message: speechApiKey ? 'Speech API key found' : 'Speech API key missing'
   }
 
   return NextResponse.json(results)

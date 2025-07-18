@@ -81,7 +81,7 @@ Supabase Key: ${supabaseKey.substring(0, 30)}...`,
       
       // Server Environment Test
       const env = data.tests.environment
-      const hasAllVars = env.supabaseUrl.present && env.supabaseKey.present && env.whisperKey.present
+      const hasAllVars = env.supabaseUrl.present && env.supabaseKey.present && env.speechApiKey.present
       
       if (hasAllVars) {
         updateTest(
@@ -90,14 +90,14 @@ Supabase Key: ${supabaseKey.substring(0, 30)}...`,
           'All server environment variables found',
           `Supabase URL: ${env.supabaseUrl.value}
 Supabase Key: ${env.supabaseKey.value}
-Whisper Key: ${env.whisperKey.value}`,
+Speech API Key: ${env.speechApiKey.value}`,
           duration
         )
       } else {
         const missing = []
         if (!env.supabaseUrl.present) missing.push('NEXT_PUBLIC_SUPABASE_URL')
         if (!env.supabaseKey.present) missing.push('NEXT_PUBLIC_SUPABASE_ANON_KEY')
-        if (!env.whisperKey.present) missing.push('WHISPER_API')
+        if (!env.speechApiKey.present) missing.push('ASSEMBLY_AI_KEY or WHISPER_API')
         
         updateTest(
           'Server Environment', 
@@ -119,12 +119,12 @@ Whisper Key: ${env.whisperKey.value}`,
       )
       
       // API Configuration Test
-      const api = data.tests.whisper
+      const api = data.tests.speechApi
       updateTest(
         'API Configuration',
         api.status === 'success' ? 'success' : 'error',
         api.message,
-        api.status === 'error' ? 'Add your Whisper API key to the WHISPER_API environment variable.' : undefined,
+        api.status === 'error' ? 'Add your AssemblyAI API key to ASSEMBLY_AI_KEY or keep using WHISPER_API.' : undefined,
         duration
       )
       
@@ -347,7 +347,8 @@ Whisper Key: ${env.whisperKey.value}`,
             <ul className="text-sm space-y-1 text-muted-foreground">
               <li>• <code>NEXT_PUBLIC_SUPABASE_URL</code> - Your Supabase project URL</li>
               <li>• <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> - Your Supabase anonymous key</li>
-              <li>• <code>WHISPER_API</code> - Your OpenAI Whisper API key</li>
+              <li>• <code>ASSEMBLY_AI_KEY</code> - Your AssemblyAI API key (recommended)</li>
+              <li>• <code>WHISPER_API</code> - Your OpenAI Whisper API key (alternative)</li>
             </ul>
           </div>
           
