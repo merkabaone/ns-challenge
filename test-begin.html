@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Begin Button</title>
+</head>
+<body>
+    <h1>Testing Begin Button</h1>
+    <p>Open the browser console (F12) and then:</p>
+    <ol>
+        <li>Go to http://localhost:3002</li>
+        <li>Click the Begin button</li>
+        <li>Check if you see console logs: "Begin button clicked" and "Navigating to profile page"</li>
+        <li>Check if the URL changes to http://localhost:3002/profile</li>
+    </ol>
+    
+    <h2>If the button doesn't work:</h2>
+    <p>Try these in the browser console:</p>
+    <pre>
+// Test 1: Check if router is available
+console.log(window.next)
+
+// Test 2: Navigate directly
+window.location.href = '/profile'
+
+// Test 3: Check localStorage
+console.log(localStorage)
+    </pre>
+</body>
+</html>
