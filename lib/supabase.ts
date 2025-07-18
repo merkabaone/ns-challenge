@@ -15,6 +15,7 @@ export type Profile = {
   interests: string[]
   connection_preference: string
   availability: string
+  voice_intro?: string
   created_at?: string
   updated_at?: string
 }

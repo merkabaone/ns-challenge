@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS profiles (
   interests TEXT[] NOT NULL DEFAULT '{}',
   connection_preference TEXT NOT NULL,
   availability TEXT NOT NULL,
+  voice_intro TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

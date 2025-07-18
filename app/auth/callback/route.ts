@@ -2,8 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = new URL(request.url)
+  const { searchParams } = new URL(request.url)
   const code = searchParams.get('code')
+  
+  // Use the configured site URL or fallback to the request origin
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin
 
   if (code) {
     try {
@@ -32,11 +35,11 @@ export async function GET(request: NextRequest) {
           })
           
           // Redirect to profile setup
-          return NextResponse.redirect(`${origin}/profile`)
+          return NextResponse.redirect(`${siteUrl}/profile`)
         }
         
         // Profile exists, redirect to swipe
-        return NextResponse.redirect(`${origin}/swipe`)
+        return NextResponse.redirect(`${siteUrl}/swipe`)
       }
     } catch (error) {
       console.error('Auth callback error:', error)
@@ -44,5 +47,5 @@ export async function GET(request: NextRequest) {
   }
 
   // Auth failed, redirect to home
-  return NextResponse.redirect(`${origin}/`)
+  return NextResponse.redirect(`${siteUrl}/`)
 }

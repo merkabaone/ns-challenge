@@ -1,0 +1,129 @@
+/* Network School Design System */
+
+:root {
+  /* Colors */
+  --ns-bg-primary: #1a1a1a;
+  --ns-text-primary: #ffffff;
+  --ns-text-secondary: rgba(255, 255, 255, 0.9);
+  
+  /* Typography */
+  --ns-font-serif: Georgia, 'Times New Roman', serif;
+  --ns-font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Spacing */
+  --ns-spacing-xs: 0.5rem;
+  --ns-spacing-sm: 1rem;
+  --ns-spacing-md: 1.5rem;
+  --ns-spacing-lg: 2rem;
+  --ns-spacing-xl: 3rem;
+  --ns-spacing-2xl: 4rem;
+  
+  /* Font Sizes */
+  --ns-text-xs: 0.875rem;
+  --ns-text-sm: 1rem;
+  --ns-text-base: 1.125rem;
+  --ns-text-lg: 1.25rem;
+  --ns-text-xl: 1.5rem;
+  --ns-text-2xl: 2rem;
+  --ns-text-3xl: 2.5rem;
+  --ns-text-4xl: 3rem;
+}
+
+/* Base Styles */
+.ns-container {
+  background-color: var(--ns-bg-primary);
+  color: var(--ns-text-primary);
+  min-height: 100vh;
+  padding: var(--ns-spacing-xl) var(--ns-spacing-lg);
+}
+
+@media (max-width: 768px) {
+  .ns-container {
+    padding: var(--ns-spacing-lg) var(--ns-spacing-md);
+  }
+}
+
+/* Typography */
+.ns-heading {
+  font-family: var(--ns-font-serif);
+  font-size: var(--ns-text-4xl);
+  font-weight: 400;
+  line-height: 1.2;
+  margin-bottom: var(--ns-spacing-xl);
+  letter-spacing: -0.02em;
+}
+
+@media (max-width: 768px) {
+  .ns-heading {
+    font-size: var(--ns-text-3xl);
+  }
+}
+
+.ns-body {
+  font-family: var(--ns-font-sans);
+  font-size: var(--ns-text-base);
+  line-height: 1.6;
+  color: var(--ns-text-secondary);
+  max-width: 750px;
+}
+
+.ns-paragraph {
+  margin-bottom: var(--ns-spacing-lg);
+}
+
+.ns-paragraph:last-child {
+  margin-bottom: 0;
+}
+
+/* Emphasis Styles */
+.ns-emphasis {
+  font-style: italic;
+  color: var(--ns-text-primary);
+}
+
+/* Link Styles */
+.ns-link {
+  color: var(--ns-text-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  transition: opacity 0.2s ease;
+}
+
+.ns-link:hover {
+  opacity: 0.8;
+}
+
+/* Content Sections */
+.ns-section {
+  margin-bottom: var(--ns-spacing-2xl);
+}
+
+.ns-section:last-child {
+  margin-bottom: 0;
+}
+
+/* Utility Classes */
+.ns-text-large {
+  font-size: var(--ns-text-lg);
+  line-height: 1.5;
+}
+
+.ns-text-small {
+  font-size: var(--ns-text-sm);
+}
+
+/* Animation */
+.ns-fade-in {
+  animation: nsFadeIn 0.6s ease-out;
+}
+
+@keyframes nsFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -83,6 +83,13 @@ export function SwipeCard({ profile, onSwipeLeft, onSwipeRight, sharedInterests 
             </div>
           </div>
 
+          {/* Voice Introduction */}
+          {profile.voice_intro && (
+            <div className="mb-4 p-3 bg-black/50 rounded-lg">
+              <p className="text-sm italic line-clamp-3">&ldquo;{profile.voice_intro}&rdquo;</p>
+            </div>
+          )}
+
           {/* Interests */}
           <div className="flex flex-wrap gap-2">
             {profile.interests.map(interest => (

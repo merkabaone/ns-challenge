@@ -2,15 +2,18 @@
 
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Camera, X } from 'lucide-react'
+import { Camera, X, Mic, Square } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { VoiceIntro } from '@/components/VoiceIntro'
+import '../styles/network-school.css'
 
 const INTERESTS = [
-  'AI', 'Health & Wellness', 'Building', 'Music', 'Exploring the City',
-  'Sports', 'Reading', 'Gaming', 'Cooking', 'Art', 'Travel', 'Photography'
+  'AI & Machine Learning', 'Health & Wellness', 'Building Products', 'Music Production', 
+  'Exploring Cities', 'Fitness & Sports', 'Reading & Writing', 'Gaming & Esports', 
+  'Cooking & Nutrition', 'Art & Design', 'Travel & Adventure', 'Photography & Video',
+  'Blockchain & Web3', 'Sustainability', 'Meditation & Mindfulness', 'Public Speaking',
+  'Investing & Finance', 'Podcasting', 'Community Building', 'Personal Development',
+  'Robotics', 'Biohacking', 'Language Learning', 'Dancing'
 ]
 
 const CONNECTION_PREFERENCES = [
@@ -30,7 +33,9 @@ export default function ProfileSetup() {
   const [selectedInterests, setSelectedInterests] = useState<string[]>([])
   const [connectionPreference, setConnectionPreference] = useState('')
   const [availability, setAvailability] = useState('')
+  const [voiceIntro, setVoiceIntro] = useState('')
   const [showCamera, setShowCamera] = useState(false)
+  const [showVoiceIntro, setShowVoiceIntro] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
@@ -88,9 +93,21 @@ export default function ProfileSetup() {
     }
   }
 
-  const handleSubmit = async () => {
+  const handleContinueToVoice = () => {
     if (!displayName || selectedInterests.length === 0 || !connectionPreference || !availability) {
-      alert('Please fill in all fields')
+      alert('Please fill in all fields before continuing')
+      return
+    }
+    setShowVoiceIntro(true)
+  }
+
+  const handleTranscription = (transcript: string) => {
+    setVoiceIntro(transcript)
+  }
+
+  const handleSubmit = async () => {
+    if (!voiceIntro) {
+      alert('Please record a voice introduction')
       return
     }
 
@@ -110,6 +127,7 @@ export default function ProfileSetup() {
           interests: selectedInterests,
           connection_preference: connectionPreference,
           availability: availability,
+          voice_intro: voiceIntro,
           updated_at: new Date().toISOString()
         })
         .eq('discord_id', user.id)
@@ -125,137 +143,207 @@ export default function ProfileSetup() {
     }
   }
 
-  return (
-    <main className="min-h-screen p-4 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950">
-      <div className="max-w-2xl mx-auto space-y-6">
-        <h1 className="text-3xl font-bold text-center">Complete Your Profile</h1>
-        
-        {/* Profile Picture */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 space-y-4">
-          <Label>Profile Picture</Label>
-          <div className="flex flex-col items-center space-y-4">
-            {profilePicture ? (
-              <div className="relative">
-                <img src={profilePicture} alt="Profile" className="w-32 h-32 rounded-full object-cover" />
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  className="absolute -top-2 -right-2 rounded-full p-1"
-                  onClick={() => setProfilePicture(null)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            ) : (
-              <div className="w-32 h-32 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                <Camera className="h-12 w-12 text-gray-400" />
-              </div>
-            )}
-            
-            {!showCamera && (
-              <div className="flex gap-2">
-                <Button onClick={startCamera} variant="outline">
-                  <Camera className="h-4 w-4 mr-2" />
-                  Take Photo
-                </Button>
-                <Button onClick={() => fileInputRef.current?.click()} variant="outline">
-                  Upload Photo
-                </Button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                />
-              </div>
-            )}
-          </div>
-
-          {showCamera && (
-            <div className="space-y-4">
-              <video ref={videoRef} autoPlay className="w-full rounded-lg" />
-              <canvas ref={canvasRef} className="hidden" />
-              <div className="flex gap-2 justify-center">
-                <Button onClick={capturePhoto}>Capture</Button>
-                <Button onClick={stopCamera} variant="outline">Cancel</Button>
-              </div>
+  if (showVoiceIntro) {
+    return (
+      <main className="ns-container">
+        <div className="max-w-2xl mx-auto ns-fade-in">
+          <h1 className="ns-heading text-center">Introduce Yourself</h1>
+          
+          <div className="ns-section">
+            <div className="ns-body text-center mb-8">
+              <p className="text-lg mb-4">
+                Tell us about yourself! Share what brings you to Network School, 
+                what you&apos;re working on, and what kind of connections you&apos;re looking for.
+              </p>
+              <p className="text-sm text-gray-400">
+                Tip: Keep it under 60 seconds for the best experience
+              </p>
             </div>
-          )}
-        </div>
 
-        {/* Display Name */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 space-y-4">
-          <Label htmlFor="displayName">Display Name</Label>
-          <Input
-            id="displayName"
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-            placeholder="How should we call you?"
-          />
-        </div>
+            <VoiceIntro onTranscriptionComplete={handleTranscription} />
 
-        {/* Interests */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 space-y-4">
-          <Label>My Interests (Select up to 5)</Label>
-          <div className="flex flex-wrap gap-2">
-            {INTERESTS.map(interest => (
-              <Button
-                key={interest}
-                variant={selectedInterests.includes(interest) ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => toggleInterest(interest)}
-                disabled={!selectedInterests.includes(interest) && selectedInterests.length >= 5}
+            {voiceIntro && (
+              <div className="mt-6 p-4 bg-gray-800 rounded-lg">
+                <h3 className="font-semibold mb-2">Your Introduction:</h3>
+                <p className="text-gray-300 italic">&ldquo;{voiceIntro}&rdquo;</p>
+                <button 
+                  onClick={() => setVoiceIntro('')}
+                  className="ns-link mt-2 text-sm"
+                >
+                  Re-record
+                </button>
+              </div>
+            )}
+
+            <div className="flex gap-4 mt-8">
+              <button 
+                onClick={() => {
+                  setShowVoiceIntro(false)
+                  setVoiceIntro('')
+                }}
+                className="flex-1 border border-gray-600 text-white py-4 rounded font-semibold hover:border-white transition-colors"
               >
-                {interest}
-              </Button>
-            ))}
+                Back
+              </button>
+              <button 
+                onClick={handleSubmit} 
+                disabled={loading || !voiceIntro}
+                className="flex-1 bg-white text-black py-4 rounded font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {loading ? 'Saving...' : 'Start Swiping!'}
+              </button>
+            </div>
           </div>
         </div>
+      </main>
+    )
+  }
 
-        {/* Connection Preference */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 space-y-4">
-          <Label>How I Like to Connect</Label>
-          <div className="flex flex-wrap gap-2">
-            {CONNECTION_PREFERENCES.map(pref => (
-              <Button
-                key={pref}
-                variant={connectionPreference === pref ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setConnectionPreference(pref)}
-              >
-                {pref}
-              </Button>
-            ))}
+  return (
+    <main className="ns-container">
+      <div className="max-w-2xl mx-auto ns-fade-in">
+        <h1 className="ns-heading text-center">Complete Your Profile</h1>
+        
+        <div className="space-y-6">
+          {/* Profile Picture */}
+          <div className="ns-section">
+            <h2 className="ns-body text-lg font-semibold mb-4">Profile Picture</h2>
+            <div className="flex flex-col items-center space-y-4">
+              {profilePicture ? (
+                <div className="relative">
+                  <img src={profilePicture} alt="Profile" className="w-32 h-32 rounded-full object-cover border-2 border-white" />
+                  <button
+                    className="absolute -top-2 -right-2 bg-white text-black rounded-full p-1 hover:opacity-80 transition-opacity"
+                    onClick={() => setProfilePicture(null)}
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <div className="w-32 h-32 bg-gray-800 rounded-full flex items-center justify-center border-2 border-gray-600">
+                  <Camera className="h-12 w-12 text-gray-400" />
+                </div>
+              )}
+              
+              {!showCamera && (
+                <div className="flex gap-4">
+                  <button 
+                    onClick={startCamera} 
+                    className="ns-link"
+                  >
+                    Take Photo
+                  </button>
+                  <button 
+                    onClick={() => fileInputRef.current?.click()} 
+                    className="ns-link"
+                  >
+                    Upload Photo
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+                </div>
+              )}
+            </div>
+
+            {showCamera && (
+              <div className="space-y-4 mt-4">
+                <video ref={videoRef} autoPlay className="w-full rounded-lg" />
+                <canvas ref={canvasRef} className="hidden" />
+                <div className="flex gap-4 justify-center">
+                  <button onClick={capturePhoto} className="ns-link">Capture</button>
+                  <button onClick={stopCamera} className="ns-link">Cancel</button>
+                </div>
+              </div>
+            )}
           </div>
-        </div>
 
-        {/* Availability */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 space-y-4">
-          <Label>When I&apos;m Free</Label>
-          <div className="flex flex-wrap gap-2">
-            {AVAILABILITY.map(time => (
-              <Button
-                key={time}
-                variant={availability === time ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setAvailability(time)}
-              >
-                {time}
-              </Button>
-            ))}
+          {/* Display Name */}
+          <div className="ns-section">
+            <h2 className="ns-body text-lg font-semibold mb-4">Display Name</h2>
+            <input
+              id="displayName"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              placeholder="How should we call you?"
+              className="w-full bg-gray-800 text-white border border-gray-600 rounded px-4 py-2 focus:outline-none focus:border-white transition-colors"
+            />
           </div>
-        </div>
 
-        {/* Submit Button */}
-        <Button 
-          onClick={handleSubmit} 
-          disabled={loading}
-          size="lg"
-          className="w-full"
-        >
-          {loading ? 'Saving...' : 'Start Swiping!'}
-        </Button>
+          {/* Interests */}
+          <div className="ns-section">
+            <h2 className="ns-body text-lg font-semibold mb-4">My Interests (Select up to 5)</h2>
+            <div className="flex flex-wrap gap-2">
+              {INTERESTS.map(interest => (
+                <button
+                  key={interest}
+                  onClick={() => toggleInterest(interest)}
+                  disabled={!selectedInterests.includes(interest) && selectedInterests.length >= 5}
+                  className={`px-4 py-2 rounded transition-all ${
+                    selectedInterests.includes(interest) 
+                      ? 'bg-white text-black' 
+                      : 'bg-transparent text-white border border-gray-600 hover:border-white disabled:opacity-50 disabled:hover:border-gray-600'
+                  }`}
+                >
+                  {interest}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Connection Preference */}
+          <div className="ns-section">
+            <h2 className="ns-body text-lg font-semibold mb-4">How I Like to Connect</h2>
+            <div className="flex flex-wrap gap-2">
+              {CONNECTION_PREFERENCES.map(pref => (
+                <button
+                  key={pref}
+                  onClick={() => setConnectionPreference(pref)}
+                  className={`px-4 py-2 rounded transition-all ${
+                    connectionPreference === pref 
+                      ? 'bg-white text-black' 
+                      : 'bg-transparent text-white border border-gray-600 hover:border-white'
+                  }`}
+                >
+                  {pref}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Availability */}
+          <div className="ns-section">
+            <h2 className="ns-body text-lg font-semibold mb-4">When I&apos;m Free</h2>
+            <div className="flex flex-wrap gap-2">
+              {AVAILABILITY.map(time => (
+                <button
+                  key={time}
+                  onClick={() => setAvailability(time)}
+                  className={`px-4 py-2 rounded transition-all ${
+                    availability === time 
+                      ? 'bg-white text-black' 
+                      : 'bg-transparent text-white border border-gray-600 hover:border-white'
+                  }`}
+                >
+                  {time}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Continue Button */}
+          <button 
+            onClick={handleContinueToVoice} 
+            disabled={loading || !displayName || selectedInterests.length === 0 || !connectionPreference || !availability}
+            className="w-full bg-white text-black py-4 rounded font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+          >
+            Continue to Voice Introduction
+          </button>
+        </div>
       </div>
     </main>
   )
