@@ -1,12 +1,18 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Database, Mic, TestTube, Zap, Code } from 'lucide-react'
+import { Database, Mic, TestTube, Zap, Code, LogIn, User } from 'lucide-react'
+import { AuthButton } from '@/components/auth/auth-button'
 
 export default function Home() {
   return (
     <main className="container mx-auto p-4">
       <div className="flex flex-col items-center justify-center min-h-screen space-y-8">
+        {/* Header with Auth Button */}
+        <div className="absolute top-4 right-4">
+          <AuthButton />
+        </div>
+        
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
             NS Challenge
