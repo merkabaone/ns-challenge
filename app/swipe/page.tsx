@@ -2,17 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Heart, X, Sparkles } from 'lucide-react'
-import { type Profile } from '@/lib/supabase'
-import { SwipeCard } from '@/components/SwipeCard'
-import { MatchModal } from '@/components/MatchModal'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { logger } from '@/lib/logger'
+import { Heart, X, MessageCircle } from 'lucide-react'
 import '../globals.css'
 
 // Mock profiles for demo
-const MOCK_PROFILES: Profile[] = [
+const MOCK_PROFILES = [
   {
     id: '1',
     discord_id: 'demo_1',

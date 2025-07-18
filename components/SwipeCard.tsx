@@ -14,7 +14,7 @@ interface SwipeCardProps {
 
 export function SwipeCard({ profile, onSwipeLeft, onSwipeRight, sharedInterests }: SwipeCardProps) {
   const x = useMotionValue(0)
-  const rotate = useTransform(x, [-200, 200], [-30, 30])
+  const rotate = useTransform(x, [-200, 200], [-20, 20])
   const opacity = useTransform(x, [-200, -100, 0, 100, 200], [0, 1, 1, 1, 0])
 
   const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: { offset: { x: number; y: number } }) => {
@@ -27,99 +27,49 @@ export function SwipeCard({ profile, onSwipeLeft, onSwipeRight, sharedInterests 
 
   return (
     <motion.div
-      className="absolute w-full cursor-grab active:cursor-grabbing"
+      className="absolute w-full"
       style={{ x, rotate, opacity }}
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
       onDragEnd={handleDragEnd}
-      initial={{ scale: 0.8, opacity: 0 }}
+      initial={{ scale: 0.9, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
-      exit={{ scale: 0.8, opacity: 0 }}
-      transition={{ duration: 0.3 }}
+      exit={{ scale: 0.9, opacity: 0 }}
+      transition={{ duration: 0.2 }}
     >
-      <div className="dark-card relative overflow-hidden h-[600px] p-0">
-        {/* Background image or color */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80 z-10" />
-        
-        {/* Profile image */}
-        {profile.profile_picture_url || profile.discord_avatar_url ? (
-          <img 
-            src={profile.profile_picture_url || profile.discord_avatar_url} 
-            alt={profile.display_name}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full" style={{ background: 'linear-gradient(135deg, hsl(var(--secondary)) 0%, hsl(var(--muted)) 100%)' }} />
-        )}
-
-        {/* Swipe indicators */}
-        <motion.div
-          className="absolute top-4 left-4 px-4 py-2 rounded-full font-bold z-20"
-          style={{ 
-            opacity: useTransform(x, [-100, 0], [1, 0]),
-            backgroundColor: '#ef4444',
-            color: 'white'
-          }}
-        >
-          PASS
-        </motion.div>
-        
-        <motion.div
-          className="absolute top-4 right-4 px-4 py-2 rounded-full font-bold z-20"
-          style={{ 
-            opacity: useTransform(x, [0, 100], [0, 1]),
-            backgroundColor: '#10b981',
-            color: 'white'
-          }}
-        >
-          LIKE
-        </motion.div>
-
-        {/* Profile info */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 text-white z-20">
-          <h3 className="text-3xl font-bold mb-2">{profile.display_name}</h3>
+      <div className="bg-black border border-white rounded-3xl overflow-hidden h-[500px] p-6">
+        <div className="h-full flex flex-col">
+          {/* Name and emoji */}
+          <div className="text-center mb-6">
+            <div className="text-6xl mb-4">👤</div>
+            <h3 className="text-2xl font-bold">{profile.display_name}</h3>
+          </div>
           
-          <div className="mb-4 space-y-2 text-sm">
-            <div className="flex items-start gap-2">
-              <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
-              <div className="flex flex-wrap gap-1">
-                {profile.connection_preferences?.map((pref, index) => (
-                  <span key={index}>
-                    {pref}{index < profile.connection_preferences.length - 1 && ' •'}
-                  </span>
-                )) || 'Open to connect'}
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4" />
-              <span>{profile.availability}</span>
+          {/* Simple bio */}
+          <div className="flex-1 space-y-4">
+            {profile.voice_intro && (
+              <p className="text-center text-lg opacity-80 line-clamp-4">
+                &ldquo;{profile.voice_intro.split('.')[0]}.&rdquo;
+              </p>
+            )}
+            
+            {/* Interests as simple tags */}
+            <div className="flex flex-wrap gap-2 justify-center mt-6">
+              {profile.interests.slice(0, 3).map(interest => (
+                <span 
+                  key={interest}
+                  className="px-4 py-2 rounded-full border border-white/30 text-sm"
+                >
+                  {interest}
+                </span>
+              ))}
             </div>
           </div>
-
-          {/* Voice Introduction */}
-          {profile.voice_intro && (
-            <div className="mb-4 p-3 rounded-lg" style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
-              <p className="text-sm italic line-clamp-3">&ldquo;{profile.voice_intro}&rdquo;</p>
-            </div>
-          )}
-
-          {/* Interests */}
-          <div className="flex flex-wrap gap-2">
-            {profile.interests.map(interest => (
-              <span 
-                key={interest}
-                className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${
-                  sharedInterests.includes(interest) 
-                    ? 'bg-white text-black' 
-                    : 'bg-white/20 text-white backdrop-blur-sm'
-                }`}
-              >
-                {sharedInterests.includes(interest) && (
-                  <Sparkles className="inline h-3 w-3 mr-1" />
-                )}
-                {interest}
-              </span>
-            ))}
+          
+          {/* Swipe hints */}
+          <div className="flex justify-between text-xs opacity-40 mt-6">
+            <span>← Pass</span>
+            <span>Connect →</span>
           </div>
         </div>
       </div>
