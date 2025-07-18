@@ -53,7 +53,8 @@ export async function middleware(req: NextRequest) {
 
     // Clean up old entries periodically
     if (Math.random() < 0.01) {
-      for (const [k, v] of rateLimit.entries()) {
+      const entries = Array.from(rateLimit.entries())
+      for (const [k, v] of entries) {
         if (now > v.resetTime) {
           rateLimit.delete(k)
         }

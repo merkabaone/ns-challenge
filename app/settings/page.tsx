@@ -57,7 +57,7 @@ export default function SettingsPage() {
 
       const userProfile = JSON.parse(savedProfile) as Profile
       setProfile(userProfile)
-      setProfilePicture(userProfile.profile_picture_url)
+      setProfilePicture(userProfile.profile_picture_url || null)
       setDisplayName(userProfile.display_name)
       setSelectedInterests(userProfile.interests || [])
       setConnectionPreferences((userProfile as any).connection_preferences || [])
