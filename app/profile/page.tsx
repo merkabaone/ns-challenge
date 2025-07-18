@@ -1,221 +1,262 @@
 'use client'
 
-import { useAuth } from '@/lib/auth/auth-context'
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
-import { ArrowLeft, User, Settings, Github, Chrome, MessageCircle, Loader2 } from 'lucide-react'
-import Link from 'next/link'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Camera, X } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
 
-export default function ProfilePage() {
-  const { user, loading } = useAuth()
+const INTERESTS = [
+  'AI', 'Health & Wellness', 'Building', 'Music', 'Exploring the City',
+  'Sports', 'Reading', 'Gaming', 'Cooking', 'Art', 'Travel', 'Photography'
+]
+
+const CONNECTION_PREFERENCES = [
+  'Workout (The Burn)', 'Grab a Meal', 'Co-work Session', 'Just Chat'
+]
+
+const AVAILABILITY = [
+  'Mornings', 'Lunchtime', 'Afternoons', 'Evenings'
+]
+
+export default function ProfileSetup() {
   const router = useRouter()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [loading, setLoading] = useState(false)
+  const [profilePicture, setProfilePicture] = useState<string | null>(null)
+  const [displayName, setDisplayName] = useState('')
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([])
+  const [connectionPreference, setConnectionPreference] = useState('')
+  const [availability, setAvailability] = useState('')
+  const [showCamera, setShowCamera] = useState(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  // Redirect if not authenticated
-  if (!user && !loading) {
-    router.push('/auth')
-    return null
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    )
-  }
-
-  const getProviderIcon = (provider: string) => {
-    switch (provider) {
-      case 'google':
-        return <Chrome className="h-4 w-4" />
-      case 'github':
-        return <Github className="h-4 w-4" />
-      case 'discord':
-        return <MessageCircle className="h-4 w-4" />
-      default:
-        return <User className="h-4 w-4" />
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true })
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream
+        setShowCamera(true)
+      }
+    } catch (error) {
+      console.error('Error accessing camera:', error)
+      alert('Could not access camera. Please use file upload instead.')
     }
   }
 
-  const getProviderName = (provider: string) => {
-    switch (provider) {
-      case 'google':
-        return 'Google'
-      case 'github':
-        return 'GitHub'
-      case 'discord':
-        return 'Discord'
-      default:
-        return 'Unknown'
+  const capturePhoto = () => {
+    if (videoRef.current && canvasRef.current) {
+      const context = canvasRef.current.getContext('2d')
+      if (context) {
+        canvasRef.current.width = videoRef.current.videoWidth
+        canvasRef.current.height = videoRef.current.videoHeight
+        context.drawImage(videoRef.current, 0, 0)
+        const dataUrl = canvasRef.current.toDataURL('image/jpeg')
+        setProfilePicture(dataUrl)
+        stopCamera()
+      }
+    }
+  }
+
+  const stopCamera = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream
+      stream.getTracks().forEach(track => track.stop())
+      setShowCamera(false)
+    }
+  }
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setProfilePicture(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const toggleInterest = (interest: string) => {
+    if (selectedInterests.includes(interest)) {
+      setSelectedInterests(selectedInterests.filter(i => i !== interest))
+    } else if (selectedInterests.length < 5) {
+      setSelectedInterests([...selectedInterests, interest])
+    }
+  }
+
+  const handleSubmit = async () => {
+    if (!displayName || selectedInterests.length === 0 || !connectionPreference || !availability) {
+      alert('Please fill in all fields')
+      return
+    }
+
+    setLoading(true)
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        router.push('/')
+        return
+      }
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          display_name: displayName,
+          profile_picture_url: profilePicture,
+          interests: selectedInterests,
+          connection_preference: connectionPreference,
+          availability: availability,
+          updated_at: new Date().toISOString()
+        })
+        .eq('discord_id', user.id)
+
+      if (error) throw error
+
+      router.push('/swipe')
+    } catch (error) {
+      console.error('Error updating profile:', error)
+      alert('Failed to update profile. Please try again.')
+    } finally {
+      setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
-      <div className="container mx-auto p-4 space-y-6">
-        {/* Header */}
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="icon" asChild>
-            <Link href="/dashboard">
-              <ArrowLeft className="h-4 w-4" />
-            </Link>
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold">Profile Settings</h1>
-            <p className="text-muted-foreground">
-              Manage your account information and preferences
-            </p>
+    <main className="min-h-screen p-4 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950">
+      <div className="max-w-2xl mx-auto space-y-6">
+        <h1 className="text-3xl font-bold text-center">Complete Your Profile</h1>
+        
+        {/* Profile Picture */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 space-y-4">
+          <Label>Profile Picture</Label>
+          <div className="flex flex-col items-center space-y-4">
+            {profilePicture ? (
+              <div className="relative">
+                <img src={profilePicture} alt="Profile" className="w-32 h-32 rounded-full object-cover" />
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  className="absolute -top-2 -right-2 rounded-full p-1"
+                  onClick={() => setProfilePicture(null)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <div className="w-32 h-32 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                <Camera className="h-12 w-12 text-gray-400" />
+              </div>
+            )}
+            
+            {!showCamera && (
+              <div className="flex gap-2">
+                <Button onClick={startCamera} variant="outline">
+                  <Camera className="h-4 w-4 mr-2" />
+                  Take Photo
+                </Button>
+                <Button onClick={() => fileInputRef.current?.click()} variant="outline">
+                  Upload Photo
+                </Button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+              </div>
+            )}
+          </div>
+
+          {showCamera && (
+            <div className="space-y-4">
+              <video ref={videoRef} autoPlay className="w-full rounded-lg" />
+              <canvas ref={canvasRef} className="hidden" />
+              <div className="flex gap-2 justify-center">
+                <Button onClick={capturePhoto}>Capture</Button>
+                <Button onClick={stopCamera} variant="outline">Cancel</Button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Display Name */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 space-y-4">
+          <Label htmlFor="displayName">Display Name</Label>
+          <Input
+            id="displayName"
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            placeholder="How should we call you?"
+          />
+        </div>
+
+        {/* Interests */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 space-y-4">
+          <Label>My Interests (Select up to 5)</Label>
+          <div className="flex flex-wrap gap-2">
+            {INTERESTS.map(interest => (
+              <Button
+                key={interest}
+                variant={selectedInterests.includes(interest) ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => toggleInterest(interest)}
+                disabled={!selectedInterests.includes(interest) && selectedInterests.length >= 5}
+              >
+                {interest}
+              </Button>
+            ))}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Profile Information */}
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5" />
-                Profile Information
-              </CardTitle>
-              <CardDescription>
-                Your account details and authentication information
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center gap-6">
-                <Avatar className="h-20 w-20">
-                  <AvatarImage src={user?.user_metadata?.avatar_url} />
-                  <AvatarFallback className="text-xl">
-                    {user?.user_metadata?.full_name?.[0] || user?.email?.[0] || 'U'}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="space-y-2">
-                  <h3 className="text-xl font-semibold">
-                    {user?.user_metadata?.full_name || 'Anonymous User'}
-                  </h3>
-                  <p className="text-muted-foreground">
-                    {user?.email}
-                  </p>
-                  <div className="flex items-center gap-2">
-                    {getProviderIcon(user?.app_metadata?.provider || '')}
-                    <Badge variant="secondary">
-                      {getProviderName(user?.app_metadata?.provider || '')}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Full Name</label>
-                  <div className="p-3 bg-muted rounded-md">
-                    {user?.user_metadata?.full_name || 'Not provided'}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Email</label>
-                  <div className="p-3 bg-muted rounded-md">
-                    {user?.email || 'Not provided'}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Username</label>
-                  <div className="p-3 bg-muted rounded-md">
-                    {user?.user_metadata?.user_name || user?.user_metadata?.preferred_username || 'Not provided'}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Provider</label>
-                  <div className="p-3 bg-muted rounded-md flex items-center gap-2">
-                    {getProviderIcon(user?.app_metadata?.provider || '')}
-                    {getProviderName(user?.app_metadata?.provider || '')}
-                  </div>
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="space-y-4">
-                <h4 className="font-medium">Account Details</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div className="flex justify-between">
-                    <span>Account Created</span>
-                    <span className="text-muted-foreground">
-                      {new Date(user?.created_at || '').toLocaleDateString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Last Login</span>
-                    <span className="text-muted-foreground">
-                      {new Date(user?.last_sign_in_at || '').toLocaleDateString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>User ID</span>
-                    <span className="text-muted-foreground font-mono text-xs">
-                      {user?.id}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Email Verified</span>
-                    <span className="text-muted-foreground">
-                      {user?.email_confirmed_at ? 'Yes' : 'No'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Settings Sidebar */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5" />
-                Settings
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <p className="text-sm font-medium">Profile Management</p>
-                <p className="text-xs text-muted-foreground">
-                  Your profile information is managed by your authentication provider ({getProviderName(user?.app_metadata?.provider || '')}).
-                </p>
-              </div>
-
-              <Separator />
-
-              <div className="space-y-2">
-                <p className="text-sm font-medium">Privacy</p>
-                <p className="text-xs text-muted-foreground">
-                  Your data is protected and only used for your NS Challenge experience.
-                </p>
-              </div>
-
-              <Separator />
-
-              <div className="space-y-2">
-                <p className="text-sm font-medium">Account Actions</p>
-                <div className="space-y-2">
-                  <Button variant="outline" className="w-full justify-start text-sm">
-                    <Settings className="h-4 w-4 mr-2" />
-                    Update Profile
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start text-sm">
-                    <User className="h-4 w-4 mr-2" />
-                    Change Avatar
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Connection Preference */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 space-y-4">
+          <Label>How I Like to Connect</Label>
+          <div className="flex flex-wrap gap-2">
+            {CONNECTION_PREFERENCES.map(pref => (
+              <Button
+                key={pref}
+                variant={connectionPreference === pref ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setConnectionPreference(pref)}
+              >
+                {pref}
+              </Button>
+            ))}
+          </div>
         </div>
+
+        {/* Availability */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 space-y-4">
+          <Label>When I&apos;m Free</Label>
+          <div className="flex flex-wrap gap-2">
+            {AVAILABILITY.map(time => (
+              <Button
+                key={time}
+                variant={availability === time ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setAvailability(time)}
+              >
+                {time}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        {/* Submit Button */}
+        <Button 
+          onClick={handleSubmit} 
+          disabled={loading}
+          size="lg"
+          className="w-full"
+        >
+          {loading ? 'Saving...' : 'Start Swiping!'}
+        </Button>
       </div>
-    </div>
+    </main>
   )
 }

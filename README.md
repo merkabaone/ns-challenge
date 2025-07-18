@@ -1,199 +1,140 @@
-# NS Challenge - Competition Ready Stack 🚀
+# NS Friender 💖
 
-Competition-ready monorepo built with Next.js, Supabase, Tailwind CSS, and ShadCN/UI for rapid development and seamless deployment.
+A fun, focused tool that helps Network School members find and connect with each other based on shared interests and availability.
+
+## 🌟 Features
+
+- 🔐 Discord OAuth authentication
+- 📸 Camera capture or file upload for profile pictures
+- 🏷️ Interest-based matching (up to 5 interests)
+- 💬 Connection preferences (Workout, Grab a Meal, Co-work, Chat)
+- ⏰ Availability preferences (Mornings, Lunchtime, Afternoons, Evenings)
+- 👆 Swipe interface with animations
+- 💖 Real-time match notifications
+- 📋 Discord handle sharing for matches
 
 ## ⚡ Quick Start
 
-### 🚀 Automated Setup (Recommended)
+### 1. Clone and Install
 ```bash
-# Clone and install
-git clone https://github.com/merkabaone/ns-challenge.git
-cd ns-challenge
-
-# One-command setup (installs deps, sets up env, initializes components)
-npm run setup
-
-# Start development
-npm run dev
+git clone <your-repo-url>
+cd ns-coding-challenge
+npm install
 ```
 
-### 🔧 Manual Setup
+### 2. Setup Supabase
+
+1. Create a project at [supabase.com](https://supabase.com)
+2. Run the database schema from `supabase/schema.sql`
+3. Enable Discord OAuth in Authentication > Providers
+4. Add Discord OAuth credentials
+
+### 3. Configure Environment
+
+Create `.env.local`:
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+```
+
+### 4. Run Development Server
 ```bash
-# Clone and install
-git clone https://github.com/merkabaone/ns-challenge.git
-cd ns-challenge
-npm install
-
-# Setup environment (interactive CLI)
-npm run setup:env
-
-# Initialize ShadCN/UI
-npx shadcn@latest init
-
-# Start development
 npm run dev
 ```
 
 ## 🏗️ Architecture
 
 - **Frontend**: Next.js 14 (App Router) + TypeScript
-- **Backend**: Supabase (Auth, Database, Storage)
+- **Backend**: Supabase (Auth, Database)
 - **Styling**: Tailwind CSS + ShadCN/UI Components
-- **Deployment**: Vercel (Zero-config)
-
-## 📦 Stack
-
-- **Framework**: Next.js 14 with App Router
-- **Database**: Supabase (PostgreSQL)
-- **Authentication**: Supabase Auth
-- **Styling**: Tailwind CSS + ShadCN/UI
-- **State**: Zustand (lightweight state management)
-- **Forms**: React Hook Form
-- **Icons**: Lucide React
 - **Animations**: Framer Motion
 - **Deployment**: Vercel
 
-## 🚀 Competition Features
+## 📱 User Flow
 
-- **Instant Deploy**: `npm run deploy` to Vercel
-- **Fast Development**: Hot reload, TypeScript, optimized builds
-- **Component Library**: Pre-built ShadCN/UI components
-- **Database Ready**: Supabase integration with type generation
-- **Authentication**: Drop-in auth with Supabase
-- **Responsive**: Mobile-first design with Tailwind CSS
-
-## 📂 Project Structure
-
-```
-ns-challenge/
-├── app/                    # Next.js App Router
-│   ├── globals.css         # Global styles
-│   ├── layout.tsx          # Root layout
-│   └── page.tsx            # Home page
-├── components/             # React components
-│   ├── ui/                 # ShadCN/UI components
-│   └── custom/             # Custom components
-├── lib/                    # Utilities and configurations
-│   ├── supabase/           # Supabase clients
-│   ├── utils.ts            # Utility functions
-│   └── types.ts            # TypeScript types
-├── hooks/                  # Custom React hooks
-└── public/                 # Static assets
-```
-
-## 🔧 Available Scripts
-
-### 🚀 Setup & Development
-```bash
-npm run setup        # Complete automated setup (recommended)
-npm run setup:env    # Interactive environment setup
-npm run setup:supabase # Supabase project setup
-npm run setup:vercel  # Vercel deployment setup
-npm run dev          # Start development server
-```
-
-### 🛠️ Build & Deploy
-```bash
-npm run build        # Build for production
-npm run start        # Start production server
-npm run deploy       # Deploy to Vercel
-```
-
-### 🔍 Quality & Types
-```bash
-npm run lint         # Run ESLint
-npm run type-check   # Run TypeScript check
-npm run db:generate-types # Generate Supabase types
-```
-
-## 🗄️ Database Setup
-
-### 🚀 Automated (Recommended)
-```bash
-npm run setup:supabase
-```
-This will:
-- Install Supabase CLI (if needed)
-- Login to your Supabase account
-- Create/link your project
-- Generate TypeScript types
-- Update environment variables
-
-### 🔧 Manual Setup
-1. Create a Supabase project at [supabase.com](https://supabase.com)
-2. Copy your project URL and anon key to `.env.local`
-3. Use the Supabase dashboard to create tables
-4. Generate TypeScript types:
-   ```bash
-   npm run db:generate-types
-   ```
-
-## 🎨 Adding Components
-
-```bash
-# Add ShadCN/UI components
-npx shadcn@latest add button
-npx shadcn@latest add card
-npx shadcn@latest add input
-npx shadcn@latest add form
-```
+1. **Welcome**: User lands on welcome page, clicks "Connect with Discord"
+2. **Auth**: Discord OAuth flow, automatic profile creation
+3. **Profile Setup**: User adds photo, selects interests, connection preferences, and availability
+4. **Swiping**: Users swipe through other member profiles
+5. **Matching**: When two users like each other, they match
+6. **Connection**: Match reveals Discord username for manual friend request
 
 ## 🚀 Deployment
 
-### 🚀 Automated Vercel Setup
-```bash
-npm run setup:vercel
+### Deploy to Vercel
+
+1. Push code to GitHub
+2. Import project to [Vercel](https://vercel.com)
+3. Add environment variables:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `NEXT_PUBLIC_SITE_URL` (your Vercel URL)
+4. Deploy!
+
+### Important: Update Supabase Redirect URL
+
+After deployment, update your Supabase Discord OAuth settings:
+1. Go to Authentication > URL Configuration
+2. Add `https://your-app.vercel.app/auth/callback` to Redirect URLs
+
+## 📂 Key Files
+
 ```
-This will:
-- Install Vercel CLI (if needed)
-- Login to your Vercel account
-- Deploy your project
-- Automatically set environment variables from `.env.local`
-
-### 🔧 Manual Vercel Setup
-```bash
-# One-time setup
-npm install -g vercel
-vercel login
-
-# Deploy
-npm run deploy
+app/
+├── page.tsx                # Welcome page with Discord login
+├── profile/page.tsx        # Profile setup page
+├── swipe/page.tsx          # Main swiping interface
+├── auth/callback/route.ts  # Discord OAuth callback
+components/
+├── SwipeCard.tsx           # Swipeable card component
+├── MatchModal.tsx          # Match notification modal
+lib/
+├── supabase.ts             # Supabase client and types
+supabase/
+└── schema.sql              # Database schema
 ```
 
-### Environment Variables
-The automated setup will handle this, but if setting manually:
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+## 🛠️ Tech Stack
 
-## 🎯 Competition Tips
+- **Next.js 14**: React framework with App Router
+- **Supabase**: Backend as a Service (Auth + Database)
+- **Framer Motion**: Smooth swipe animations
+- **Tailwind CSS**: Utility-first styling
+- **ShadCN/UI**: Beautiful UI components
+- **TypeScript**: Type safety
 
-### ⚡ Speed Tips
-1. **Use automated setup**: `npm run setup` gets you running in 60 seconds
-2. **Deploy early**: `npm run setup:vercel` for instant deployment
-3. **Use ShadCN/UI**: Pre-built, customizable components
-4. **Mobile-first**: Design for mobile, enhance for desktop
+## 🗄️ Database Schema
 
-### 🛠️ Development Tips
-1. **Type safety**: Use TypeScript for better development experience
-2. **Database-first**: Design your schema early with Supabase
-3. **Component library**: Build reusable components in `components/custom/`
-4. **Environment setup**: Use different `.env.local` for development vs production
+The app uses three main tables:
 
-## 📚 Resources
+1. **profiles**: User profiles with Discord info, interests, preferences
+2. **likes**: Records of swipe actions (who liked whom)
+3. **matches**: Mutual likes between users
 
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Supabase Documentation](https://supabase.com/docs)
-- [ShadCN/UI Documentation](https://ui.shadcn.com)
-- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-- [Vercel Documentation](https://vercel.com/docs)
+Row Level Security (RLS) ensures users can only:
+- View all profiles
+- Update their own profile
+- View their own likes and matches
 
-## 🤝 Contributing
+## ✅ Success Criteria Met
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+- [x] Discord OAuth authentication
+- [x] Profile creation with photo, interests, and preferences
+- [x] Swipeable card interface
+- [x] Mutual match detection
+- [x] Discord handle display on match
+- [x] Deployed and functional
+
+## 🎯 Time to Build: <55 minutes
+
+This MVP was built in under an hour following the PRD requirements:
+
+- **15 min**: Setup & Auth
+- **15 min**: Profile Creation
+- **20 min**: Core Swiping
+- **5 min**: Match & Deploy
 
 ---
 
-Built with ❤️ for competition success!
+Built with ❤️ for Network School!

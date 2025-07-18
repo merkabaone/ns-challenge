@@ -1,141 +1,85 @@
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Database, Mic, TestTube, Zap, Code, LogIn, User } from 'lucide-react'
-import { AuthButton } from '@/components/auth/auth-button'
+import { Heart } from 'lucide-react'
+import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
 
-export default function Home() {
+export default async function Home() {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  async function signInWithDiscord() {
+    'use server'
+    const supabase = createClient()
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'discord',
+      options: {
+        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback`,
+      },
+    })
+    
+    if (data.url) {
+      redirect(data.url)
+    }
+  }
+
+  // If user is already logged in, redirect to appropriate page
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('discord_id', user.id)
+      .single()
+    
+    if (profile) {
+      redirect('/swipe')
+    } else {
+      redirect('/profile')
+    }
+  }
+
   return (
-    <main className="container mx-auto p-4">
-      <div className="flex flex-col items-center justify-center min-h-screen space-y-8">
-        {/* Header with Auth Button */}
-        <div className="absolute top-4 right-4">
-          <AuthButton />
-        </div>
-        
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
-            NS Challenge
+    <main className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950">
+      <div className="max-w-md w-full space-y-8 text-center">
+        <div className="space-y-4">
+          <div className="flex justify-center">
+            <div className="relative">
+              <Heart className="h-24 w-24 text-pink-500 animate-pulse" fill="currentColor" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-white font-bold text-2xl">NS</span>
+              </div>
+            </div>
+          </div>
+          
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            NS Friender
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl">
-            Competition-ready app with Next.js, Supabase, Whisper AI, and ShadCN/UI
+          
+          <p className="text-xl text-gray-600 dark:text-gray-300">
+            Find your next Network School friend!
+          </p>
+          
+          <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
+            Connect with fellow NS members based on shared interests and availability. 
+            Swipe, match, and make meaningful connections.
           </p>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Zap className="h-5 w-5" />
-                Quick Start
-              </CardTitle>
-              <CardDescription>
-                Your app is ready to deploy! Start building your competition entry.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <p className="text-sm font-medium">✅ Next.js 14 (App Router)</p>
-                <p className="text-sm font-medium">✅ Supabase Integration</p>
-                <p className="text-sm font-medium">✅ Whisper AI Integration</p>
-                <p className="text-sm font-medium">✅ Tailwind CSS + ShadCN/UI</p>
-                <p className="text-sm font-medium">✅ TypeScript Ready</p>
-                <p className="text-sm font-medium">✅ Vercel Deploy Ready</p>
-              </div>
-              <Link href="/test">
-                <Button className="w-full">
-                  <TestTube className="h-4 w-4 mr-2" />
-                  Test System
-                </Button>
-              </Link>
-              <Link href="/auth-test">
-                <Button variant="outline" className="w-full">
-                  <User className="h-4 w-4 mr-2" />
-                  Test Authentication
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Database className="h-5 w-5" />
-                Database Ready
-              </CardTitle>
-              <CardDescription>
-                Supabase database with example schema and RLS policies
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <p className="text-sm font-medium">🏗️ Users table with auth</p>
-                <p className="text-sm font-medium">🎵 Audio transcriptions table</p>
-                <p className="text-sm font-medium">📁 Projects table for data</p>
-                <p className="text-sm font-medium">🔒 Row Level Security enabled</p>
-                <p className="text-sm font-medium">⚡ Optimized indexes</p>
-              </div>
-              <Button variant="outline" className="w-full" asChild>
-                <Link href="https://supabase.com/dashboard" target="_blank">
-                  <Database className="h-4 w-4 mr-2" />
-                  Open Supabase
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
+        <form action={signInWithDiscord}>
+          <Button 
+            type="submit"
+            size="lg" 
+            className="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-semibold py-6 text-lg"
+          >
+            <svg className="w-6 h-6 mr-3" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20.317 4.369a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.369a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/>
+            </svg>
+            Connect with Discord
+          </Button>
+        </form>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Code className="h-5 w-5" />
-                Frontend Excellence
-              </CardTitle>
-              <CardDescription>
-                Complete development system for maximum efficiency
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <p className="text-sm font-medium">🎨 Design System Tokens</p>
-                <p className="text-sm font-medium">🧪 Component Testing</p>
-                <p className="text-sm font-medium">📊 Performance Monitoring</p>
-                <p className="text-sm font-medium">📚 Interactive Documentation</p>
-                <p className="text-sm font-medium">🔧 Development Tools</p>
-              </div>
-              <Link href="/dev">
-                <Button variant="outline" className="w-full">
-                  <Code className="h-4 w-4 mr-2" />
-                  Dev Dashboard
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Card className="w-full max-w-2xl">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Mic className="h-5 w-5" />
-              Audio Transcription Demo
-            </CardTitle>
-            <CardDescription>
-              Test your Whisper API integration with live audio transcription
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center space-y-4">
-              <p className="text-sm text-muted-foreground">
-                Record or upload audio files to transcribe with OpenAI&apos;s Whisper API
-              </p>
-              <Link href="/test">
-                <Button size="lg">
-                  <Mic className="h-4 w-4 mr-2" />
-                  Try Audio Transcription
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
+        <p className="text-xs text-gray-400 dark:text-gray-500">
+          By signing in, you agree to share your Discord profile information
+        </p>
       </div>
     </main>
   )
