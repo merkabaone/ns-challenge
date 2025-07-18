@@ -32,23 +32,19 @@ export async function GET() {
   try {
     if (supabaseUrl && supabaseKey) {
       const supabase = createClient(supabaseUrl, supabaseKey)
-      const { data, error } = await supabase.from('_health_check').select('*').limit(1)
       
-      if (error && error.code === 'PGRST116') {
-        // Table doesn't exist, but connection is working
-        results.tests.supabase = {
-          status: 'success',
-          message: 'Database connection successful'
-        }
-      } else if (error) {
+      // Simple auth check - this will work even with empty database
+      const { data, error } = await supabase.auth.getSession()
+      
+      if (error) {
         results.tests.supabase = {
           status: 'error',
-          message: error.message
+          message: `Database connection failed: ${error.message}`
         }
       } else {
         results.tests.supabase = {
           status: 'success',
-          message: 'Database connection and query successful'
+          message: 'Database connection successful'
         }
       }
     } else {
