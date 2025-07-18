@@ -1,5 +1,7 @@
+import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Database, Mic, TestTube, Zap } from 'lucide-react'
 
 export default function Home() {
   return (
@@ -10,28 +12,89 @@ export default function Home() {
             NS Challenge
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl">
-            Competition-ready app built with Next.js, Supabase, Tailwind CSS, and ShadCN/UI
+            Competition-ready app with Next.js, Supabase, Whisper AI, and ShadCN/UI
           </p>
         </div>
         
-        <Card className="w-full max-w-md">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Zap className="h-5 w-5" />
+                Quick Start
+              </CardTitle>
+              <CardDescription>
+                Your app is ready to deploy! Start building your competition entry.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <p className="text-sm font-medium">✅ Next.js 14 (App Router)</p>
+                <p className="text-sm font-medium">✅ Supabase Integration</p>
+                <p className="text-sm font-medium">✅ Whisper AI Integration</p>
+                <p className="text-sm font-medium">✅ Tailwind CSS + ShadCN/UI</p>
+                <p className="text-sm font-medium">✅ TypeScript Ready</p>
+                <p className="text-sm font-medium">✅ Vercel Deploy Ready</p>
+              </div>
+              <Link href="/test">
+                <Button className="w-full">
+                  <TestTube className="h-4 w-4 mr-2" />
+                  Test System
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Database className="h-5 w-5" />
+                Database Ready
+              </CardTitle>
+              <CardDescription>
+                Supabase database with example schema and RLS policies
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <p className="text-sm font-medium">🏗️ Users table with auth</p>
+                <p className="text-sm font-medium">🎵 Audio transcriptions table</p>
+                <p className="text-sm font-medium">📁 Projects table for data</p>
+                <p className="text-sm font-medium">🔒 Row Level Security enabled</p>
+                <p className="text-sm font-medium">⚡ Optimized indexes</p>
+              </div>
+              <Button variant="outline" className="w-full" asChild>
+                <Link href="https://supabase.com/dashboard" target="_blank">
+                  <Database className="h-4 w-4 mr-2" />
+                  Open Supabase
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card className="w-full max-w-2xl">
           <CardHeader>
-            <CardTitle>Quick Start</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Mic className="h-5 w-5" />
+              Audio Transcription Demo
+            </CardTitle>
             <CardDescription>
-              Your app is ready to deploy! Start building your competition entry.
+              Test your Whisper API integration with live audio transcription
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <p className="text-sm font-medium">✅ Next.js 14 (App Router)</p>
-              <p className="text-sm font-medium">✅ Supabase Integration</p>
-              <p className="text-sm font-medium">✅ Tailwind CSS + ShadCN/UI</p>
-              <p className="text-sm font-medium">✅ TypeScript Ready</p>
-              <p className="text-sm font-medium">✅ Vercel Deploy Ready</p>
+          <CardContent>
+            <div className="text-center space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Record or upload audio files to transcribe with OpenAI's Whisper API
+              </p>
+              <Link href="/test">
+                <Button size="lg">
+                  <Mic className="h-4 w-4 mr-2" />
+                  Try Audio Transcription
+                </Button>
+              </Link>
             </div>
-            <Button className="w-full">
-              Start Building
-            </Button>
           </CardContent>
         </Card>
       </div>
