@@ -106,14 +106,46 @@ export default function ProfileSetup() {
       <div className="max-w-2xl mx-auto px-6 py-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-light mb-4">
-            Hi there! 👋
+            Let&apos;s set up your profile
           </h1>
           <p className="text-xl opacity-80">
-            Let&apos;s get you connected quickly
+            Quick setup to start connecting
           </p>
         </div>
         
         <div className="space-y-12">
+          {/* Name and Discord Input */}
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm opacity-80 mb-2">Your name</label>
+              <input
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder="John Doe"
+                className="w-full px-6 py-4 bg-transparent border border-white/30 rounded-full text-white placeholder-gray-500 focus:outline-none focus:border-white transition-all"
+                style={{
+                  fontSize: '1rem',
+                  fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif',
+                }}
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm opacity-80 mb-2">Discord handle</label>
+              <input
+                type="text"
+                value={discordHandle}
+                onChange={(e) => setDiscordHandle(e.target.value)}
+                placeholder="username#1234"
+                className="w-full px-6 py-4 bg-transparent border border-white/30 rounded-full text-white placeholder-gray-500 focus:outline-none focus:border-white transition-all"
+                style={{
+                  fontSize: '1rem',
+                  fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif',
+                }}
+              />
+            </div>
+          </div>
           {/* Interests */}
           <div className="text-center">
             <h2 className="text-2xl mb-6">What excites you?</h2>
@@ -159,9 +191,9 @@ export default function ProfileSetup() {
           <div className="text-center pt-8">
             <button
               onClick={handleFinish}
-              disabled={loading || selectedInterests.length === 0 || !connectionStyle}
+              disabled={loading || !displayName || !discordHandle || selectedInterests.length === 0 || !connectionStyle}
               className={`px-12 py-4 rounded-full text-lg font-medium transition-all ${
-                selectedInterests.length > 0 && connectionStyle
+                displayName && discordHandle && selectedInterests.length > 0 && connectionStyle
                   ? 'bg-white text-black hover:scale-105'
                   : 'bg-white/20 text-white/50 cursor-not-allowed'
               }`}
@@ -169,9 +201,12 @@ export default function ProfileSetup() {
               {loading ? <LoadingSpinner size="sm" /> : 'Start Connecting →'}
             </button>
             
-            {selectedInterests.length === 0 && (
+            {(!displayName || !discordHandle || selectedInterests.length === 0 || !connectionStyle) && (
               <p className="mt-4 text-sm opacity-60">
-                Select at least one interest
+                {!displayName ? 'Enter your name' :
+                 !discordHandle ? 'Enter your Discord handle' :
+                 selectedInterests.length === 0 ? 'Select at least one interest' :
+                 !connectionStyle ? 'Select how you like to connect' : ''}
               </p>
             )}
           </div>
