@@ -57,7 +57,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new Error('Supabase client not initialized')
     }
 
-    const callbackUrl = new URL(`${window.location.origin}/auth/callback`)
+    // Use production URL if available, otherwise use current origin
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
+    const callbackUrl = new URL(`${baseUrl}/auth/callback`)
     if (redirectTo) {
       callbackUrl.searchParams.set('next', redirectTo)
     }
