@@ -1,19 +1,20 @@
 'use client'
 
-import { useEffect } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import './globals.css'
 
 export default function Home() {
   const router = useRouter()
-
-  // Remove auth check - just start fresh each time
-
+  
   const handleBegin = () => {
     // Clear any existing demo profile to start fresh
     localStorage.removeItem('demo_profile')
     localStorage.removeItem('demo_user_id')
     localStorage.removeItem('temp_profile')
+    localStorage.removeItem('demo_matches')
+    
+    // Navigate to profile setup
     router.push('/profile')
   }
 
@@ -40,14 +41,18 @@ export default function Home() {
         
         <button 
           onClick={handleBegin}
-          className="px-20 py-8 bg-white text-black rounded-full transition-all hover:scale-105 hover:shadow-2xl active:scale-95"
+          type="button"
+          className="px-20 py-8 bg-white text-black rounded-full transition-all hover:scale-105 hover:shadow-2xl active:scale-95 cursor-pointer"
           style={{
             fontSize: '2.25rem',
             fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif',
             fontWeight: '700',
             letterSpacing: '0.05em',
             boxShadow: '0 12px 48px rgba(255, 255, 255, 0.3)',
-            minWidth: '320px'
+            minWidth: '320px',
+            cursor: 'pointer',
+            border: 'none',
+            outline: 'none'
           }}
         >
           Begin

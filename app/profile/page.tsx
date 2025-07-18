@@ -15,6 +15,7 @@ export default function ProfileSetup() {
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [displayName, setDisplayName] = useState('')
+  const [discordUsername, setDiscordUsername] = useState('')
   const [selectedInterest, setSelectedInterest] = useState('')
   const [profileImage, setProfileImage] = useState<string | null>(null)
 
@@ -34,10 +35,11 @@ export default function ProfileSetup() {
     const profile = {
       id: `user_${Date.now()}`,
       display_name: displayName || 'Demo User',
-      discord_username: 'demo_user_123',
+      discord_username: discordUsername || 'demo_user_123',
       interests: [selectedInterest || '🤖 AI & Tech'],
       connection_style: '☕ Coffee Chat',
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
+      profile_image: profileImage
     }
     
     localStorage.setItem('demo_profile', JSON.stringify(profile))
@@ -115,6 +117,18 @@ export default function ProfileSetup() {
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="Enter your name"
+              className="w-full max-w-sm mx-auto block px-6 py-3 bg-white/10 border border-white/30 rounded-full text-center text-white placeholder-white/50 focus:outline-none focus:border-white/60 transition-all"
+            />
+          </div>
+
+          {/* Discord Username Input */}
+          <div className="text-center">
+            <h2 className="text-2xl mb-6">Your Discord username</h2>
+            <input
+              type="text"
+              value={discordUsername}
+              onChange={(e) => setDiscordUsername(e.target.value)}
+              placeholder="username#1234"
               className="w-full max-w-sm mx-auto block px-6 py-3 bg-white/10 border border-white/30 rounded-full text-center text-white placeholder-white/50 focus:outline-none focus:border-white/60 transition-all"
             />
           </div>
