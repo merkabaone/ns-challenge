@@ -8,6 +8,7 @@ export default function Home() {
   const router = useRouter()
   
   const handleBegin = () => {
+    console.log('Begin button clicked')
     // Clear any existing demo profile to start fresh
     localStorage.removeItem('demo_profile')
     localStorage.removeItem('demo_user_id')
@@ -15,6 +16,7 @@ export default function Home() {
     localStorage.removeItem('demo_matches')
     
     // Navigate to profile setup
+    console.log('Navigating to profile page')
     router.push('/profile')
   }
 
@@ -22,8 +24,7 @@ export default function Home() {
     <main className="fixed inset-0 flex items-center justify-center overflow-hidden fade-in" style={{ 
       backgroundColor: 'black',
       height: '100dvh', // Dynamic viewport height for mobile
-      width: '100vw',
-      touchAction: 'none' // Prevent scrolling on touch devices
+      width: '100vw'
     }}>
       <div className="w-full max-w-md px-6 text-center" style={{ 
         maxHeight: '90vh',
@@ -39,10 +40,10 @@ export default function Home() {
           NS Friender
         </h1>
         
-        <button 
+        <Link 
+          href="/profile"
           onClick={handleBegin}
-          type="button"
-          className="px-20 py-8 bg-white text-black rounded-full transition-all hover:scale-105 hover:shadow-2xl active:scale-95 cursor-pointer"
+          className="inline-block px-20 py-8 bg-white text-black rounded-full transition-all hover:scale-105 hover:shadow-2xl active:scale-95 cursor-pointer"
           style={{
             fontSize: '2.25rem',
             fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif',
@@ -52,11 +53,12 @@ export default function Home() {
             minWidth: '320px',
             cursor: 'pointer',
             border: 'none',
-            outline: 'none'
+            outline: 'none',
+            textDecoration: 'none'
           }}
         >
           Begin
-        </button>
+        </Link>
       </div>
     </main>
   )
