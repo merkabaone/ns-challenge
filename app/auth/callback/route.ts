@@ -7,6 +7,9 @@ export async function GET(request: NextRequest) {
   
   // Use the configured site URL or fallback to the request origin
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin
+  
+  console.log('Auth callback - siteUrl:', siteUrl)
+  console.log('Auth callback - code:', code)
 
   if (code) {
     try {
